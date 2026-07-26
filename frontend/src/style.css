@@ -1,0 +1,24 @@
+@font-face {
+    font-family: 'Inter';
+    src: local(""), url('assets/fonts/inter-variable-v4_1.woff2') format('woff2-variations'),
+        url('assets/fonts/inter-variable-v4_1.woff2') format('woff2');
+    font-weight: 100 900;
+    /* Supports the full variable axis range */
+    font-style: normal;
+    font-display: swap;
+}
+
+.radix-themes {
+    --default-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+    --heading-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+    --strong-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+
+    /* Optional: Keep standard system mono for code blocks if preferred */
+    --code-font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}

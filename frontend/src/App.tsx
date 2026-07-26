@@ -1,19 +1,18 @@
-import { AppPanel } from "./components/app-shell/AppPanel"
-import { AppShell } from "./components/app-shell/AppShell"
-import { ChatPanel } from "./components/app-shell/ChatPanel"
-import { ThreadPanel } from "./components/app-shell/ThreadPanel"
+import { AppPanel } from "./components/AppPanel";
+import { AppShell } from "./components/AppShell";
+import { ChatPanel } from "./components/ChatPanel";
+import { ThreadPanel } from "./components/ThreadPanel";
 
 function App() {
-
-    return (
-        <div id="App">
-            <AppShell
-                leftPanel={<AppPanel />}
-                midPanel={<ChatPanel />}
-                rightPanel={<ThreadPanel />}
-            />
-        </div>
-    )
+  return (
+    <div id="App">
+      <AppShell>
+        <AppPanel />
+        <ChatPanel title="Title for the chat thread here" />
+        <ThreadPanel />
+      </AppShell>
+    </div>
+  );
 }
 
-export default App
+export default App;
