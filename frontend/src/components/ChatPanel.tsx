@@ -1,5 +1,5 @@
 import { ChatHeader, type ChatHeaderProps } from "./ChatHeader";
-import { Box, Container, Grid, Separator } from "@radix-ui/themes";
+import { Box, Grid, Separator } from "@radix-ui/themes";
 import { Composer } from "./Composer";
 import { useState } from "react";
 import { ChatBubble } from "./ChatBubble";
@@ -14,7 +14,7 @@ export function ChatPanel({ title }: ChatPanelProps) {
   };
 
   return (
-    <Container
+    <Box
       height="100%"
       style={{
         borderLeft: "1px solid var(--gray-6)",
@@ -30,13 +30,13 @@ export function ChatPanel({ title }: ChatPanelProps) {
         width="auto"
         height="calc(100% - 3.6rem - 1px)"
       >
-        <Container p="2" style={{ background: "var(--gray-2)" }}>
+        <Box p="2" style={{ background: "var(--gray-2)" }}>
           <ChatBubble message={message} />
-        </Container>
-        <Container>
+        </Box>
+        <Box>
           <Composer value={draft} onValueChange={setDraft} onSend={() => {}} />
-        </Container>
+        </Box>
       </Grid>
-    </Container>
+    </Box>
   );
 }
