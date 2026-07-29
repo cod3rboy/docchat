@@ -78,7 +78,7 @@ export function AppPanel() {
   };
 
   return (
-    <Grid columns="1" rows="auto auto 1fr">
+    <Grid columns="1" rows="auto auto 1fr" height="100vh">
       <Box p="2">
         <Flex gap="2" justify="between">
           <Heading as="h1">Doc Chat</Heading>

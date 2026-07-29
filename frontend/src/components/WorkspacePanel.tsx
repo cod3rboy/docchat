@@ -29,7 +29,9 @@ export function WorkspacePanel({
   return (
     <Flex py="4" direction="column">
       <Flex p="2" justify="between">
-        <Heading size="2">Workspaces</Heading>
+        <Heading size="2" color="gray">
+          Workspaces
+        </Heading>
         <WorkspaceFormPopover
           heading="New workspace"
           onSubmit={onAdd}
