@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 
+	"github.com/cod3rboy/docchat/internal/app"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -13,7 +14,7 @@ var assets embed.FS
 
 func main() {
 	// Create an instance of the app structure
-	app := NewApp()
+	app := app.New()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -23,10 +24,8 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		OnStartup: app.startup,
-		Bind: []interface{}{
-			app,
-		},
+		OnStartup: app.Startup,
+		Bind:      []interface{}{},
 	})
 
 	if err != nil {

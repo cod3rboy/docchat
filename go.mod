@@ -1,4 +1,4 @@
-module docchat
+module github.com/cod3rboy/docchat
 
 go 1.25.0
 
