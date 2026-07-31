@@ -1,0 +1,33 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "internal/db/workspace.queries.sql"
+    schema: "internal/db/workspace.schema.sql"
+    gen:
+      go:
+        package: "workspace"
+        out: "internal/models/workspace"
+
+  - engine: "sqlite"
+    queries: "internal/db/document.queries.sql"
+    schema: "internal/db/document.schema.sql"
+    gen:
+      go:
+        package: "document"
+        out: "internal/models/document"
+
+  - engine: "sqlite"
+    queries: "internal/db/thread.queries.sql"
+    schema: "internal/db/thread.schema.sql"
+    gen:
+      go:
+        package: "thread"
+        out: "internal/models/thread"
+
+  - engine: "sqlite"
+    queries: "internal/db/message.queries.sql"
+    schema: "internal/db/message.schema.sql"
+    gen:
+      go:
+        package: "message"
+        out: "internal/models/message"
