@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"io/fs"
@@ -44,7 +45,7 @@ func New() (*DB, error) {
 	}, nil
 }
 
-func (db *DB) Migrate() error {
+func (db *DB) Migrate(ctx context.Context) error {
 	entries, err := schemasDirectory.ReadDir(".")
 	if err != nil {
 		return err
@@ -58,7 +59,7 @@ func (db *DB) Migrate() error {
 
 		sql := string(data)
 
-		if _, err := db.db.Exec(sql); err != nil {
+		if _, err := db.db.ExecContext(ctx, sql); err != nil {
 			return err
 		}
 	}

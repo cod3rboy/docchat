@@ -3,6 +3,7 @@ module github.com/cod3rboy/docchat
 go 1.25.0
 
 require (
+	github.com/segmentio/ksuid v1.0.4
 	github.com/wailsapp/wails/v2 v2.13.0
 	modernc.org/sqlite v1.55.0
 )

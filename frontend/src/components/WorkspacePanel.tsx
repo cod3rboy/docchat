@@ -12,7 +12,7 @@ export { type Workspace } from "./WorkspaceSelector";
 export interface WorkspacePanelProps {
   workspaces: Workspace[];
   selectedId: string;
-  onAdd: (workspace: Workspace) => void;
+  onAdd: (workspaceName: string) => void;
   onSwitch: WorkspaceSelectorProps["onSwitch"];
   onDelete: WorkspaceSelectorProps["onDelete"];
   onRename: WorkspaceSelectorProps["onRename"];

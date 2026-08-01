@@ -9,70 +9,74 @@ import {
 import { WorkspacePanel, type Workspace } from "./WorkspacePanel";
 import { KnowledgePanel } from "./KnowledgePanel";
 import { GearIcon } from "@radix-ui/react-icons";
-import { useState } from "react";
-
-const globalWorkspaces: Workspace[] = [
-  {
-    id: "1",
-    name: "Default",
-    canDelete: false,
-    canRename: false,
-  },
-  {
-    id: "2",
-    name: "Personal",
-    canDelete: true,
-    canRename: true,
-  },
-  {
-    id: "3",
-    name: "Work",
-    canDelete: true,
-    canRename: true,
-  },
-  {
-    id: "4",
-    name: "Health",
-    canDelete: true,
-    canRename: true,
-  },
-];
+import { useEffect, useState } from "react";
+import {
+  Create as createWorkspace,
+  List as listWorkspaces,
+  Delete as deleteWorkspace,
+  Rename as renameWorkspace,
+} from "../../wailsjs/go/bindings/Workspace";
 
 export function AppPanel() {
-  const [workspaces, setWorkspaces] = useState<Workspace[]>(globalWorkspaces);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string>("1");
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>("");
 
-  const addWorkspace = (workspace: Workspace) => {
-    if (workspaces.findIndex(({ id }) => id == workspace.id) >= 0) {
-      // workspace already added with this id, so do nothing
-      return;
-    }
+  useEffect(() => {
+    (async () => {
+      const workspaces = await listWorkspaces();
+      setWorkspaces(
+        workspaces.map((ws) => ({
+          id: ws.ID,
+          name: ws.Name,
+          canDelete: ws.Candelete,
+          canRename: ws.Canrename,
+        })),
+      );
+      setSelectedWorkspace(workspaces[0].ID);
+    })();
+  }, []);
+
+  const addWorkspace = async (workspaceName: string) => {
+    const record = await createWorkspace(workspaceName);
+    const workspace: Workspace = {
+      id: record.ID,
+      name: record.Name,
+      canDelete: record.Candelete,
+      canRename: record.Canrename,
+    };
+
     setWorkspaces((workspaces) => [workspace, ...workspaces]);
   };
 
   const switchWorkspace = (workspaceId: string) => {
-    if (workspaces.findIndex(({ id }) => id == workspaceId) >= 0) {
+    if (workspaces.findIndex(({ id }) => id === workspaceId) >= 0) {
       setSelectedWorkspace(workspaceId);
     }
   };
 
-  const deleteWorkspace = (workspaceId: string) => {
+  const _deleteWorkspace = async (workspaceId: string) => {
     const idx = workspaces.findIndex(({ id }) => id == workspaceId);
     if (idx < 0) return;
     if (!workspaces[idx].canDelete) return;
+
+    await deleteWorkspace(workspaceId);
+
     setWorkspaces((workspaces) => {
       workspaces.splice(idx, 1);
       return [...workspaces];
     });
-    setSelectedWorkspace(globalWorkspaces[0].id);
+    setSelectedWorkspace(workspaces[0].id);
   };
 
-  const renameWorkspace = (workspaceId: string, name: string) => {
+  const _renameWorkspace = async (workspaceId: string, name: string) => {
     const idx = workspaces.findIndex(({ id }) => id == workspaceId);
     if (idx < 0) return;
     if (!workspaces[idx].canRename) return;
+
+    const record = await renameWorkspace(workspaceId, name);
+
     setWorkspaces((workspaces) => {
-      workspaces[idx].name = name;
+      workspaces[idx].name = record.Name;
       return [...workspaces];
     });
   };
@@ -94,8 +98,8 @@ export function AppPanel() {
         selectedId={selectedWorkspace}
         onAdd={addWorkspace}
         onSwitch={switchWorkspace}
-        onDelete={deleteWorkspace}
-        onRename={renameWorkspace}
+        onDelete={_deleteWorkspace}
+        onRename={_renameWorkspace}
       />
       <KnowledgePanel />
     </Grid>

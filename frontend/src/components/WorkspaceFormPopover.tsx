@@ -15,8 +15,8 @@ export type Workspace = {
 
 export interface WorkspaceFormPopoverProps {
   heading: string;
-  onSubmit: (workspace: Workspace) => void;
-  workspace?: Workspace;
+  onSubmit: (workspaceName: string) => void;
+  prefill?: string;
   clearable?: boolean;
 }
 
@@ -24,31 +24,24 @@ export function WorkspaceFormPopover({
   heading,
   onSubmit,
   children,
-  workspace,
+  prefill,
   clearable = false,
 }: PropsWithChildren<WorkspaceFormPopoverProps>) {
-  const [workspaceName, setWorkspaceName] = useState<string>(
-    workspace?.name ?? "",
-  );
+  const [workspaceName, setWorkspaceName] = useState<string>(prefill ?? "");
 
   useEffect(() => {
-    if (workspace && !clearable) {
-      setWorkspaceName(workspace.name);
+    if (prefill && !clearable) {
+      setWorkspaceName(prefill);
     }
-  }, [workspace]);
+  }, [prefill]);
 
   const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (workspaceName.trim() === "") {
       return;
     }
-    const workspaceId = `${workspaceName}_${100000 + Math.trunc(Math.random() * 900000)}`;
-    onSubmit({
-      id: workspace?.id ?? workspaceId,
-      name: workspaceName,
-      canDelete: workspace?.canDelete ?? true,
-      canRename: workspace?.canRename ?? true,
-    });
+
+    onSubmit(workspaceName);
 
     if (clearable) {
       setWorkspaceName("");

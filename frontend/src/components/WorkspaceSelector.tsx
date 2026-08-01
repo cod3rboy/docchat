@@ -25,8 +25,8 @@ export function WorkspaceSelector({
   onRename,
 }: WorkspaceSelectorProps) {
   const workspace = workspaces.find(({ id }) => id === selected);
-  const renameWorkspace = (workspace: Workspace) => {
-    onRename(workspace.id, workspace.name);
+  const renameWorkspace = (workspaceName: string) => {
+    onRename(selected, workspaceName);
   };
   const deleteWorkspace = () => {
     onDelete(selected);
@@ -48,7 +48,7 @@ export function WorkspaceSelector({
         {
           <WorkspaceFormPopover
             heading="Rename workspace"
-            workspace={workspace}
+            prefill={workspace?.name}
             onSubmit={renameWorkspace}
           >
             <IconButton
