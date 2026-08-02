@@ -101,7 +101,7 @@ export function AppPanel() {
         onDelete={_deleteWorkspace}
         onRename={_renameWorkspace}
       />
-      <KnowledgePanel />
+      <KnowledgePanel workspaceId={selectedWorkspace} />
     </Grid>
   );
 }

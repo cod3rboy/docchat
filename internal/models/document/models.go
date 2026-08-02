@@ -8,7 +8,6 @@ type Document struct {
 	ID        string
 	Title     string
 	Extension string
-	Thumbnail string
 	Content   []byte
 	Workspace string
 	Created   string

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { useState, PropsWithChildren } from "react";
 import {
   Button,
   RadioCards,
@@ -9,8 +9,11 @@ import {
   Text,
   Box,
 } from "@radix-ui/themes";
+import { Choose as chooseDocument } from "../../wailsjs/go/bindings/Document";
 
-export interface KnowledgeFileDialogProps {}
+export interface KnowledgeFileDialogProps {
+  onAdd: (path: string) => void;
+}
 
 const docTypes = [
   {
@@ -28,10 +31,30 @@ const docTypes = [
 ];
 
 export function KnowledgeFileDialog({
+  onAdd,
   children,
 }: PropsWithChildren<KnowledgeFileDialogProps>) {
+  const [docType, setDocType] = useState<string>("md");
+  const [docPath, setDocPath] = useState<string>("");
+
+  const handleChooseDocument = async () => {
+    const path = await chooseDocument([docType]);
+    setDocPath(path);
+  };
+
+  const handleAddDocument = () => {
+    onAdd(docPath);
+  };
+
+  const resetOnClose = (open: boolean) => {
+    if (!open) {
+      setDocPath("");
+      setDocType("md");
+    }
+  };
+
   return (
-    <Dialog.Root>
+    <Dialog.Root onOpenChange={resetOnClose}>
       <Dialog.Trigger>{children}</Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Title>Add Knowledge File</Dialog.Title>
@@ -45,14 +68,15 @@ export function KnowledgeFileDialog({
 
         <RadioCards.Root
           my="2"
-          defaultValue="txt"
+          value={docType}
+          onValueChange={setDocType}
           columns={{ initial: "1", sm: "2", md: "3" }}
         >
-          {docTypes.map((docType) => (
-            <RadioCards.Item key={docType.value} value={docType.value}>
+          {docTypes.map(({ name, value }) => (
+            <RadioCards.Item key={value} value={value}>
               <Flex direction="column" align="center" gap="1">
                 <Heading size="3" color="gray" weight="regular">
-                  {docType.name.toUpperCase()}
+                  {name.toUpperCase()}
                 </Heading>
                 <Text align="center" color="gray">
                   Document
@@ -62,21 +86,28 @@ export function KnowledgeFileDialog({
           ))}
         </RadioCards.Root>
 
-        <Grid pt="4" columns="1fr auto" gap="2">
+        <Grid pt="4" columns="1fr auto" gap="2" overflow="hidden">
           <Box
-            py="2"
-            px="4"
             minWidth="20rem"
             style={{
               border: "1px solid var(--gray-6)",
               borderRadius: "var(--radius-3)",
             }}
+            overflowX="scroll"
           >
-            <Text color="gray" style={{ fontStyle: "italic" }} truncate>
-              No file selected
-            </Text>
+            <Box pt="1" pb="3" px="2" style={{ textWrap: "nowrap" }}>
+              {!docPath && (
+                <Text color="gray" style={{ fontStyle: "italic" }} truncate>
+                  No file selected
+                </Text>
+              )}
+
+              {docPath && <Text color="gray">{docPath}</Text>}
+            </Box>
           </Box>
-          <Button size="3">Choose</Button>
+          <Button size="3" onClick={handleChooseDocument}>
+            Choose
+          </Button>
         </Grid>
 
         <Flex gap="3" mt="6" justify="end">
@@ -86,7 +117,9 @@ export function KnowledgeFileDialog({
             </Button>
           </Dialog.Close>
           <Dialog.Close>
-            <Button disabled>Add</Button>
+            <Button disabled={!docPath} onClick={handleAddDocument}>
+              Add
+            </Button>
           </Dialog.Close>
         </Flex>
       </Dialog.Content>

@@ -44,6 +44,7 @@ func main() {
 		OnStartup: app.Startup,
 		Bind: []interface{}{
 			bindings.NewWorkspace(app),
+			bindings.NewDocument(app),
 		},
 	})
 

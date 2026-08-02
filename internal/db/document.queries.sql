@@ -1,10 +1,10 @@
 -- name: GetDocument :one
-SELECT id, title, extension, thumbnail, workspace, created 
+SELECT id, title, extension, workspace, created 
 FROM documents 
 WHERE id = ? LIMIT 1;
 
 -- name: ListDocuments :many
-SELECT id, title, extension, thumbnail, created
+SELECT id, title, extension, workspace, created
 FROM documents WHERE workspace = ?
 ORDER BY created DESC;
 
@@ -13,16 +13,16 @@ SELECT content FROM documents WHERE id = ? LIMIT 1;
 
 -- name: CreateDocument :one
 INSERT INTO documents (
-    id, title, extension, thumbnail, content, workspace, created
+    id, title, extension, content, workspace, created
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?
-) RETURNING id, title, extension, thumbnail, workspace, created;
+    ?, ?, ?, ?, ?, ?
+) RETURNING id, title, extension, workspace, created;
 
 -- name: UpdateDocument :one
 UPDATE documents
-SET title = ?, extension = ?, thumbnail = ?, content = ?
+SET title = ?, extension = ?, content = ?
 WHERE id = ?
-RETURNING id, title, extension, thumbnail, workspace, created;
+RETURNING id, title, extension, workspace, created;
 
 -- name: DeleteDocument :exec
 DELETE FROM documents WHERE id = ?;

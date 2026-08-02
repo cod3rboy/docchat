@@ -11,17 +11,16 @@ import (
 
 const createDocument = `-- name: CreateDocument :one
 INSERT INTO documents (
-    id, title, extension, thumbnail, content, workspace, created
+    id, title, extension, content, workspace, created
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?
-) RETURNING id, title, extension, thumbnail, workspace, created
+    ?, ?, ?, ?, ?, ?
+) RETURNING id, title, extension, workspace, created
 `
 
 type CreateDocumentParams struct {
 	ID        string
 	Title     string
 	Extension string
-	Thumbnail string
 	Content   []byte
 	Workspace string
 	Created   string
@@ -31,7 +30,6 @@ type CreateDocumentRow struct {
 	ID        string
 	Title     string
 	Extension string
-	Thumbnail string
 	Workspace string
 	Created   string
 }
@@ -41,7 +39,6 @@ func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) 
 		arg.ID,
 		arg.Title,
 		arg.Extension,
-		arg.Thumbnail,
 		arg.Content,
 		arg.Workspace,
 		arg.Created,
@@ -51,7 +48,6 @@ func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) 
 		&i.ID,
 		&i.Title,
 		&i.Extension,
-		&i.Thumbnail,
 		&i.Workspace,
 		&i.Created,
 	)
@@ -68,7 +64,7 @@ func (q *Queries) DeleteDocument(ctx context.Context, id string) error {
 }
 
 const getDocument = `-- name: GetDocument :one
-SELECT id, title, extension, thumbnail, workspace, created 
+SELECT id, title, extension, workspace, created 
 FROM documents 
 WHERE id = ? LIMIT 1
 `
@@ -77,7 +73,6 @@ type GetDocumentRow struct {
 	ID        string
 	Title     string
 	Extension string
-	Thumbnail string
 	Workspace string
 	Created   string
 }
@@ -89,7 +84,6 @@ func (q *Queries) GetDocument(ctx context.Context, id string) (GetDocumentRow, e
 		&i.ID,
 		&i.Title,
 		&i.Extension,
-		&i.Thumbnail,
 		&i.Workspace,
 		&i.Created,
 	)
@@ -108,7 +102,7 @@ func (q *Queries) GetDocumentContent(ctx context.Context, id string) ([]byte, er
 }
 
 const listDocuments = `-- name: ListDocuments :many
-SELECT id, title, extension, thumbnail, created
+SELECT id, title, extension, workspace, created
 FROM documents WHERE workspace = ?
 ORDER BY created DESC
 `
@@ -117,7 +111,7 @@ type ListDocumentsRow struct {
 	ID        string
 	Title     string
 	Extension string
-	Thumbnail string
+	Workspace string
 	Created   string
 }
 
@@ -134,7 +128,7 @@ func (q *Queries) ListDocuments(ctx context.Context, workspace string) ([]ListDo
 			&i.ID,
 			&i.Title,
 			&i.Extension,
-			&i.Thumbnail,
+			&i.Workspace,
 			&i.Created,
 		); err != nil {
 			return nil, err
@@ -152,15 +146,14 @@ func (q *Queries) ListDocuments(ctx context.Context, workspace string) ([]ListDo
 
 const updateDocument = `-- name: UpdateDocument :one
 UPDATE documents
-SET title = ?, extension = ?, thumbnail = ?, content = ?
+SET title = ?, extension = ?, content = ?
 WHERE id = ?
-RETURNING id, title, extension, thumbnail, workspace, created
+RETURNING id, title, extension, workspace, created
 `
 
 type UpdateDocumentParams struct {
 	Title     string
 	Extension string
-	Thumbnail string
 	Content   []byte
 	ID        string
 }
@@ -169,7 +162,6 @@ type UpdateDocumentRow struct {
 	ID        string
 	Title     string
 	Extension string
-	Thumbnail string
 	Workspace string
 	Created   string
 }
@@ -178,7 +170,6 @@ func (q *Queries) UpdateDocument(ctx context.Context, arg UpdateDocumentParams) 
 	row := q.db.QueryRowContext(ctx, updateDocument,
 		arg.Title,
 		arg.Extension,
-		arg.Thumbnail,
 		arg.Content,
 		arg.ID,
 	)
@@ -187,7 +178,6 @@ func (q *Queries) UpdateDocument(ctx context.Context, arg UpdateDocumentParams) 
 		&i.ID,
 		&i.Title,
 		&i.Extension,
-		&i.Thumbnail,
 		&i.Workspace,
 		&i.Created,
 	)

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { FilePlusIcon } from "@radix-ui/react-icons";
 import {
   Flex,
@@ -9,44 +10,66 @@ import {
   Tooltip,
 } from "@radix-ui/themes";
 import { KnowledgeFileDialog } from "./KnowledgeFileDialog";
+import {
+  List as listDocuments,
+  Add as addDocument,
+} from "../../wailsjs/go/bindings/Document";
+import pdf from "../assets/images/filetypes/pdf.png";
+import text from "../assets/images/filetypes/txt.png";
+import markdown from "../assets/images/filetypes/md.png";
+import unknown from "../assets/images/filetypes/unknown.png";
 
-const files = [
-  {
-    type: "pdf",
-    name: "Personal Documentation.pdf",
-  },
-  {
-    type: "txt",
-    name: "Crypto Investment.txt",
-  },
-  {
-    type: "md",
-    name: "README.md",
-  },
-  {
-    type: "md",
-    name: "Super secret project.md",
-  },
-  {
-    type: "exe",
-    name: "Virus.exe",
-  },
-];
+type Document = {
+  id: string;
+  title: string;
+  extension: string;
+  workspaceId: string;
+  created: string;
+};
 
-function getFileIcon(fileType: "pdf" | "txt" | "md" | string): string {
-  switch (fileType) {
+function getDocumentFileIcon(extension: string): string {
+  switch (extension) {
     case "pdf":
-      return "https://img.icons8.com/?size=100&id=13417&format=png&color=000000";
+      return pdf;
     case "txt":
-      return "https://img.icons8.com/?size=100&id=iI86e-UOulnl&format=png&color=000000";
+      return text;
     case "md":
-      return "https://img.icons8.com/?size=100&id=45065&format=png&color=000000";
+      return markdown;
     default:
-      return "https://img.icons8.com/?size=100&id=RdfQcH0NSwo1&format=png&color=000000";
+      return unknown;
   }
 }
 
-export function KnowledgePanel() {
+interface KnowledgePanelProps {
+  workspaceId: string;
+}
+
+export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
+  const [documents, setDocuments] = useState<Document[]>([]);
+
+  const loadDocuments = async () => {
+    const docList = (await listDocuments(workspaceId)) ?? [];
+    const docs: Document[] = docList.map((doc) => ({
+      id: doc.ID,
+      title: doc.Title,
+      extension: doc.Extension,
+      workspaceId: doc.Workspace,
+      created: doc.Created,
+    }));
+
+    setDocuments(docs);
+  };
+
+  const _addDocument = async (filePath: string) => {
+    const doc = await addDocument(filePath, workspaceId);
+    // TODO: add a toast to notify
+    loadDocuments();
+  };
+
+  useEffect(() => {
+    loadDocuments();
+  }, []);
+
   return (
     <Grid mt="2" columns="1" rows="auto 1fr" overflow="hidden">
       <Flex
@@ -60,7 +83,7 @@ export function KnowledgePanel() {
         <Heading color="gray" size="2">
           Knowledge
         </Heading>
-        <KnowledgeFileDialog>
+        <KnowledgeFileDialog onAdd={_addDocument}>
           <IconButton variant="ghost">
             <FilePlusIcon />
           </IconButton>
@@ -68,8 +91,9 @@ export function KnowledgePanel() {
       </Flex>
       <ScrollArea size="1" scrollbars="vertical" type="hover">
         <Grid columns="2" gap="2" p="2">
-          {files.map(({ type, name }) => (
+          {documents.map(({ id, title, extension }) => (
             <Flex
+              key={id}
               px="2"
               py="4"
               direction="column"
@@ -84,11 +108,11 @@ export function KnowledgePanel() {
                 style={{ margin: "0 auto" }}
                 width="32"
                 height="32"
-                src={getFileIcon(type)}
+                src={getDocumentFileIcon(extension)}
               />
-              <Tooltip content={name}>
+              <Tooltip content={title + "." + extension}>
                 <Text align="center" size="2" truncate>
-                  {name}
+                  {title}
                 </Text>
               </Tooltip>
             </Flex>

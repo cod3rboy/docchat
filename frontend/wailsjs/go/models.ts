@@ -1,3 +1,68 @@
+export namespace document {
+	
+	export class CreateDocumentRow {
+	    ID: string;
+	    Title: string;
+	    Extension: string;
+	    Workspace: string;
+	    Created: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CreateDocumentRow(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Title = source["Title"];
+	        this.Extension = source["Extension"];
+	        this.Workspace = source["Workspace"];
+	        this.Created = source["Created"];
+	    }
+	}
+	export class GetDocumentRow {
+	    ID: string;
+	    Title: string;
+	    Extension: string;
+	    Workspace: string;
+	    Created: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new GetDocumentRow(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Title = source["Title"];
+	        this.Extension = source["Extension"];
+	        this.Workspace = source["Workspace"];
+	        this.Created = source["Created"];
+	    }
+	}
+	export class ListDocumentsRow {
+	    ID: string;
+	    Title: string;
+	    Extension: string;
+	    Workspace: string;
+	    Created: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ListDocumentsRow(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Title = source["Title"];
+	        this.Extension = source["Extension"];
+	        this.Workspace = source["Workspace"];
+	        this.Created = source["Created"];
+	    }
+	}
+
+}
+
 export namespace workspace {
 	
 	export class Workspace {
