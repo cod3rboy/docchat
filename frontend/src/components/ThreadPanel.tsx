@@ -1,42 +1,64 @@
+import { useEffect, useState } from "react";
+import { ChatBubbleIcon, PlusIcon } from "@radix-ui/react-icons";
+import { Flex, Grid, Heading, IconButton, ScrollArea } from "@radix-ui/themes";
+import { ThreadFormPopover } from "./ThreadFormPopover";
+import { ThreadList } from "./ThreadList";
 import {
-  ChatBubbleIcon,
-  DotsVerticalIcon,
-  PlusIcon,
-} from "@radix-ui/react-icons";
-import {
-  Flex,
-  Grid,
-  Heading,
-  IconButton,
-  ScrollArea,
-  Text,
-} from "@radix-ui/themes";
-import { ThreadFormPopover, type Thread } from "./ThreadFormPopover";
+  List as listThreads,
+  Create as createThread,
+  Rename as renameThread,
+  Delete as deleteThread,
+} from "../../wailsjs/go/bindings/Thread";
 
-const threads: Thread[] = [
-  {
-    id: "1",
-    title: "My Thread 1",
-  },
-  {
-    id: "2",
-    title: "My Thread 2",
-  },
-  {
-    id: "3",
-    title: "My Thread 3",
-  },
-  {
-    id: "4",
-    title: "My Thread 4",
-  },
-  {
-    id: "5",
-    title: "This is a very longggg title for the thread",
-  },
-];
+type Thread = {
+  id: string;
+  title: string;
+  workspaceId: string;
+  created: string;
+};
 
-export function ThreadPanel() {
+export interface ThreadPanelProps {
+  workspaceId: string;
+}
+
+export function ThreadPanel({ workspaceId }: ThreadPanelProps) {
+  const [threads, setThreads] = useState<Thread[]>([]);
+
+  const loadThreads = async () => {
+    const records = (await listThreads(workspaceId)) ?? [];
+    const threads: Thread[] = records.map((r) => ({
+      id: r.ID,
+      title: r.Title,
+      workspaceId: r.Workspace,
+      created: r.Created,
+    }));
+
+    setThreads(threads);
+  };
+
+  const handleCreateThread = async (
+    thread: Omit<Thread, "workspaceId" | "created">,
+  ) => {
+    await createThread(thread.title, workspaceId);
+    loadThreads();
+  };
+  const handleRenameThread = async (
+    thread: Omit<Thread, "workspaceId" | "created">,
+  ) => {
+    await renameThread(thread.id, thread.title);
+    loadThreads();
+  };
+  const handleDeleteThread = async (
+    thread: Omit<Thread, "workspaceId" | "created">,
+  ) => {
+    await deleteThread(thread.id);
+    loadThreads();
+  };
+
+  useEffect(() => {
+    loadThreads();
+  }, []);
+
   return (
     <Grid columns="1" rows="auto 1fr" height="100vh" overflow="hidden">
       <Flex
@@ -54,7 +76,8 @@ export function ThreadPanel() {
         </Flex>
         <ThreadFormPopover
           heading="Start new thread"
-          onSubmit={() => {}}
+          actionLabel="Start"
+          onSubmit={handleCreateThread}
           clearable
         >
           <IconButton variant="ghost">
@@ -63,28 +86,11 @@ export function ThreadPanel() {
         </ThreadFormPopover>
       </Flex>
       <ScrollArea size="1" scrollbars="vertical" type="hover" className="p-1">
-        {threads.map(({ id, title }) => (
-          <Grid
-            key={id}
-            columns="1fr auto"
-            gap="1"
-            p="2"
-            className="group cursor-default hover:bg-gray-100 hover:rounded-2xl"
-            align="center"
-          >
-            <Text size="2" weight="medium" truncate>
-              {title}
-            </Text>
-            <IconButton
-              variant="ghost"
-              color="gray"
-              radius="full"
-              style={{ background: "none" }}
-            >
-              <DotsVerticalIcon />
-            </IconButton>
-          </Grid>
-        ))}
+        <ThreadList
+          threads={threads}
+          onRenameThread={handleRenameThread}
+          onDeleteThread={handleDeleteThread}
+        />
       </ScrollArea>
     </Grid>
   );

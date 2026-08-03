@@ -45,6 +45,7 @@ func main() {
 		Bind: []interface{}{
 			bindings.NewWorkspace(app),
 			bindings.NewDocument(app),
+			bindings.NewThread(app),
 		},
 	})
 

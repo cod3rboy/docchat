@@ -63,6 +63,29 @@ export namespace document {
 
 }
 
+export namespace thread {
+	
+	export class Thread {
+	    ID: string;
+	    Title: string;
+	    Workspace: string;
+	    Created: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Thread(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Title = source["Title"];
+	        this.Workspace = source["Workspace"];
+	        this.Created = source["Created"];
+	    }
+	}
+
+}
+
 export namespace workspace {
 	
 	export class Workspace {

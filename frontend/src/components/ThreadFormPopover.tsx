@@ -13,6 +13,7 @@ export type Thread = {
 
 export interface ThreadFormPopoverProps {
   heading: string;
+  actionLabel: string;
   onSubmit: (thread: Thread) => void;
   thread?: Thread;
   clearable?: boolean;
@@ -20,6 +21,7 @@ export interface ThreadFormPopoverProps {
 
 export function ThreadFormPopover({
   heading,
+  actionLabel,
   onSubmit,
   children,
   thread,
@@ -67,7 +69,7 @@ export function ThreadFormPopover({
             ></TextField.Root>
             <Popover.Close>
               <Button type="submit" disabled={threadTitle.trim() === ""}>
-                Start
+                {actionLabel}
               </Button>
             </Popover.Close>
           </Flex>
