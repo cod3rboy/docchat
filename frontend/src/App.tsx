@@ -12,7 +12,7 @@ function App() {
         <WorkspaceProvider>
           <ThreadProvider>
             <AppPanel />
-            <ChatPanel title="Title for the chat thread here" />
+            <ChatPanel />
             <ThreadPanel />
           </ThreadProvider>
         </WorkspaceProvider>

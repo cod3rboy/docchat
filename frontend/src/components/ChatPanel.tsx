@@ -1,17 +1,25 @@
-import { ChatHeader, type ChatHeaderProps } from "./ChatHeader";
+import { ChatHeader } from "./ChatHeader";
 import { Box, Grid, Separator } from "@radix-ui/themes";
 import { Composer } from "./Composer";
 import { useState } from "react";
 import { ChatBubble } from "./ChatBubble";
+import { useThread } from "../hooks/useThread";
+import { EmptyChatPanel } from "./EmptyChatPanel";
 
-export type ChatPanelProps = {} & ChatHeaderProps;
+export type ChatPanelProps = {};
 
-export function ChatPanel({ title }: ChatPanelProps) {
+export function ChatPanel({}: ChatPanelProps) {
+  const { thread } = useThread();
+
   const [draft, setDraft] = useState<string>("");
   const message = {
     text: "Hello Assistant! This is going to be longggggg message from the user to the LLM AI model.",
     timestamp: new Date(2026, 6, 23, 4, 30),
   };
+
+  if (!thread) {
+    return <EmptyChatPanel />;
+  }
 
   return (
     <Box
@@ -21,7 +29,7 @@ export function ChatPanel({ title }: ChatPanelProps) {
         borderRight: "1px solid var(--gray-6)",
       }}
     >
-      <ChatHeader title={title} />
+      <ChatHeader title={thread.title} />
       <Separator orientation="horizontal" size="4" decorative />
       <Grid
         as="div"
