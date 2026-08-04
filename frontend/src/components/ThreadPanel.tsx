@@ -8,7 +8,7 @@ import {
   ScrollArea,
   Tooltip,
 } from "@radix-ui/themes";
-import { ThreadList } from "./ThreadList";
+import { ThreadList, type Thread } from "./ThreadList";
 import {
   List as listThreads,
   Create as createThread,
@@ -16,19 +16,14 @@ import {
   Delete as deleteThread,
 } from "../../wailsjs/go/bindings/Thread";
 import { useWorkspace } from "../hooks/useWorkspace";
-
-type Thread = {
-  id: string;
-  title: string;
-  workspaceId: string;
-  created: string;
-};
+import { useThread } from "../hooks/useThread";
 
 export interface ThreadPanelProps {}
 
 export function ThreadPanel({}: ThreadPanelProps) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const { workspace } = useWorkspace();
+  const { thread, changeThread } = useThread();
 
   const loadThreads = async () => {
     const records = (await listThreads(workspace.id)) ?? [];
@@ -46,22 +41,21 @@ export function ThreadPanel({}: ThreadPanelProps) {
     await createThread(title, workspace.id);
     loadThreads();
   };
-  const handleRenameThread = async (
-    thread: Omit<Thread, "workspaceId" | "created">,
-  ) => {
+  const handleRenameThread = async (thread: Thread) => {
     await renameThread(thread.id, thread.title);
     loadThreads();
   };
-  const handleDeleteThread = async (
-    thread: Omit<Thread, "workspaceId" | "created">,
-  ) => {
+  const handleDeleteThread = async (thread: Thread) => {
     await deleteThread(thread.id);
     loadThreads();
+  };
+  const handleSelectThread = async (thread: Thread) => {
+    await changeThread(thread);
   };
 
   useEffect(() => {
     loadThreads();
-  }, []);
+  }, [workspace.id]);
 
   return (
     <Grid columns="1" rows="auto 1fr" height="100vh" overflow="hidden">
@@ -90,8 +84,10 @@ export function ThreadPanel({}: ThreadPanelProps) {
       <ScrollArea size="1" scrollbars="vertical" type="hover" className="p-1">
         <ThreadList
           threads={threads}
+          activeThread={thread}
           onRenameThread={handleRenameThread}
           onDeleteThread={handleDeleteThread}
+          onSelectThread={handleSelectThread}
         />
       </ScrollArea>
     </Grid>

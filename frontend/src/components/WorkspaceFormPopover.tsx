@@ -6,13 +6,6 @@ import {
 } from "react";
 import { Flex, Popover, TextField, Button, Heading } from "@radix-ui/themes";
 
-export type Workspace = {
-  id: string;
-  name: string;
-  canDelete: boolean;
-  canRename: boolean;
-};
-
 export interface WorkspaceFormPopoverProps {
   heading: string;
   onSubmit: (workspaceName: string) => void;

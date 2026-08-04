@@ -2,6 +2,7 @@ import { AppPanel } from "./components/AppPanel";
 import { AppShell } from "./components/AppShell";
 import { ChatPanel } from "./components/ChatPanel";
 import { ThreadPanel } from "./components/ThreadPanel";
+import { ThreadProvider } from "./providers/ThreadProvider";
 import { WorkspaceProvider } from "./providers/WorkspaceProvider";
 
 function App() {
@@ -9,9 +10,11 @@ function App() {
     <div id="App">
       <AppShell>
         <WorkspaceProvider>
-          <AppPanel />
-          <ChatPanel title="Title for the chat thread here" />
-          <ThreadPanel />
+          <ThreadProvider>
+            <AppPanel />
+            <ChatPanel title="Title for the chat thread here" />
+            <ThreadPanel />
+          </ThreadProvider>
         </WorkspaceProvider>
       </AppShell>
     </div>

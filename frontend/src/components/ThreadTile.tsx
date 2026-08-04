@@ -1,41 +1,49 @@
 import { useState } from "react";
-import {
-  Em,
-  Flex,
-  Grid,
-  IconButton,
-  Popover,
-  Text,
-  Tooltip,
-} from "@radix-ui/themes";
+import { Em, Flex, Grid, IconButton, Popover, Text } from "@radix-ui/themes";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { ThreadFormPopover } from "./ThreadFormPopover";
 
 export interface Thread {
   id: string;
   title: string;
+  workspaceId: string;
+  created: string;
 }
 
 export interface ThreadTileProps {
   thread: Thread;
+  active: boolean;
   onRename: (thread: Thread) => void;
   onDelete: (thread: Thread) => void;
+  onSelectTile: (thread: Thread) => void;
 }
 
-export function ThreadTile({ thread, onRename, onDelete }: ThreadTileProps) {
+export function ThreadTile({
+  thread,
+  active,
+  onRename,
+  onDelete,
+  onSelectTile,
+}: ThreadTileProps) {
   const [isHover, setIsHover] = useState<boolean>(false);
+  const inactiveClasses = "cursor-default hover:bg-gray-100 hover:rounded-2xl";
+  const activeClasses = "cursor-default bg-gray-100 rounded-2xl";
+
+  const handleRename = (threadTitle: string) => {
+    onRename({ ...thread, title: threadTitle });
+  };
 
   return (
     <Grid
-      className="cursor-default hover:bg-gray-100 hover:rounded-2xl"
+      className={active ? activeClasses : inactiveClasses}
       columns="1fr"
-      rows="1fr"
-      gap="1"
+      mb="1"
       p="2"
       align="center"
       position="relative"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
+      onClick={() => onSelectTile(thread)}
     >
       <Text size="2" weight={isHover ? "bold" : "medium"} truncate>
         {thread.title}
@@ -53,8 +61,8 @@ export function ThreadTile({ thread, onRename, onDelete }: ThreadTileProps) {
           <ThreadFormPopover
             heading="Rename Thread"
             actionLabel="Save"
-            onSubmit={onRename}
-            thread={thread}
+            prefill={thread.title}
+            onSubmit={handleRename}
           >
             <IconButton size="1" radius="full">
               <Pencil1Icon />

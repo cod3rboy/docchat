@@ -6,16 +6,11 @@ import {
   useState,
 } from "react";
 
-export type Thread = {
-  id: string;
-  title: string;
-};
-
 export interface ThreadFormPopoverProps {
   heading: string;
   actionLabel: string;
-  onSubmit: (thread: Thread) => void;
-  thread?: Thread;
+  onSubmit: (title: string) => void;
+  prefill?: string;
   clearable?: boolean;
 }
 
@@ -24,16 +19,16 @@ export function ThreadFormPopover({
   actionLabel,
   onSubmit,
   children,
-  thread,
+  prefill,
   clearable = false,
 }: PropsWithChildren<ThreadFormPopoverProps>) {
-  const [threadTitle, setThreadTitle] = useState<string>(thread?.title ?? "");
+  const [threadTitle, setThreadTitle] = useState<string>(prefill ?? "");
 
   useEffect(() => {
-    if (thread && !clearable) {
-      setThreadTitle(thread.title);
+    if (prefill && !clearable) {
+      setThreadTitle(prefill);
     }
-  }, [thread]);
+  }, [prefill]);
 
   const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -41,11 +36,7 @@ export function ThreadFormPopover({
       return;
     }
 
-    const threadId = `${threadTitle}_${10000 + Math.trunc(Math.random() * 900000)}`;
-    onSubmit({
-      id: thread?.id ?? threadId,
-      title: threadTitle,
-    });
+    onSubmit(threadTitle);
 
     if (clearable) {
       setThreadTitle("");
