@@ -16,10 +16,15 @@ import {
   Delete as deleteWorkspace,
   Rename as renameWorkspace,
 } from "../../wailsjs/go/bindings/Workspace";
+import { useWorkspace } from "../hooks/useWorkspace";
 
 export function AppPanel() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string>("");
+  const {
+    workspace: selectedWorkspace,
+    changeWorkspace,
+    changeToDefaultWorkspace,
+  } = useWorkspace();
 
   useEffect(() => {
     (async () => {
@@ -32,7 +37,6 @@ export function AppPanel() {
           canRename: ws.Canrename,
         })),
       );
-      setSelectedWorkspace(workspaces[0].ID);
     })();
   }, []);
 
@@ -49,8 +53,9 @@ export function AppPanel() {
   };
 
   const switchWorkspace = (workspaceId: string) => {
-    if (workspaces.findIndex(({ id }) => id === workspaceId) >= 0) {
-      setSelectedWorkspace(workspaceId);
+    const workspace = workspaces.find(({ id }) => id == workspaceId);
+    if (!!workspace) {
+      changeWorkspace(workspace);
     }
   };
 
@@ -65,7 +70,8 @@ export function AppPanel() {
       workspaces.splice(idx, 1);
       return [...workspaces];
     });
-    setSelectedWorkspace(workspaces[0].id);
+
+    changeToDefaultWorkspace();
   };
 
   const _renameWorkspace = async (workspaceId: string, name: string) => {
@@ -95,13 +101,13 @@ export function AppPanel() {
       </Box>
       <WorkspacePanel
         workspaces={workspaces}
-        selectedId={selectedWorkspace}
+        selectedId={selectedWorkspace.id}
         onAdd={addWorkspace}
         onSwitch={switchWorkspace}
         onDelete={_deleteWorkspace}
         onRename={_renameWorkspace}
       />
-      <KnowledgePanel workspaceId={selectedWorkspace} />
+      <KnowledgePanel workspaceId={selectedWorkspace.id} />
     </Grid>
   );
 }

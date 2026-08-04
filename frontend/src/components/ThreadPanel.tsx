@@ -9,6 +9,7 @@ import {
   Rename as renameThread,
   Delete as deleteThread,
 } from "../../wailsjs/go/bindings/Thread";
+import { useWorkspace } from "../hooks/useWorkspace";
 
 type Thread = {
   id: string;
@@ -17,15 +18,14 @@ type Thread = {
   created: string;
 };
 
-export interface ThreadPanelProps {
-  workspaceId: string;
-}
+export interface ThreadPanelProps {}
 
-export function ThreadPanel({ workspaceId }: ThreadPanelProps) {
+export function ThreadPanel({}: ThreadPanelProps) {
   const [threads, setThreads] = useState<Thread[]>([]);
+  const { workspace } = useWorkspace();
 
   const loadThreads = async () => {
-    const records = (await listThreads(workspaceId)) ?? [];
+    const records = (await listThreads(workspace.id)) ?? [];
     const threads: Thread[] = records.map((r) => ({
       id: r.ID,
       title: r.Title,
@@ -39,7 +39,7 @@ export function ThreadPanel({ workspaceId }: ThreadPanelProps) {
   const handleCreateThread = async (
     thread: Omit<Thread, "workspaceId" | "created">,
   ) => {
-    await createThread(thread.title, workspaceId);
+    await createThread(thread.title, workspace.id);
     loadThreads();
   };
   const handleRenameThread = async (
