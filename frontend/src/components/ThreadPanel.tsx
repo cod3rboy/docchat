@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { ChatBubbleIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Flex, Grid, Heading, IconButton, ScrollArea } from "@radix-ui/themes";
-import { ThreadFormPopover } from "./ThreadFormPopover";
+import {
+  Flex,
+  Grid,
+  Heading,
+  IconButton,
+  ScrollArea,
+  Tooltip,
+} from "@radix-ui/themes";
 import { ThreadList } from "./ThreadList";
 import {
   List as listThreads,
@@ -36,10 +42,8 @@ export function ThreadPanel({}: ThreadPanelProps) {
     setThreads(threads);
   };
 
-  const handleCreateThread = async (
-    thread: Omit<Thread, "workspaceId" | "created">,
-  ) => {
-    await createThread(thread.title, workspace.id);
+  const handleCreateThread = async (title: string) => {
+    await createThread(title, workspace.id);
     loadThreads();
   };
   const handleRenameThread = async (
@@ -74,16 +78,14 @@ export function ThreadPanel({}: ThreadPanelProps) {
             Threads
           </Heading>
         </Flex>
-        <ThreadFormPopover
-          heading="Start new thread"
-          actionLabel="Start"
-          onSubmit={handleCreateThread}
-          clearable
-        >
-          <IconButton variant="ghost">
+        <Tooltip content="New thread">
+          <IconButton
+            variant="ghost"
+            onClick={() => handleCreateThread("Untitled")}
+          >
             <PlusIcon width="16" height="16" />
           </IconButton>
-        </ThreadFormPopover>
+        </Tooltip>
       </Flex>
       <ScrollArea size="1" scrollbars="vertical" type="hover" className="p-1">
         <ThreadList

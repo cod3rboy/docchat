@@ -52,7 +52,7 @@ export function ThreadTile({ thread, onRename, onDelete }: ThreadTileProps) {
         >
           <ThreadFormPopover
             heading="Rename Thread"
-            actionLabel="Rename"
+            actionLabel="Save"
             onSubmit={onRename}
             thread={thread}
           >
