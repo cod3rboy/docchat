@@ -1,50 +1,76 @@
 import { ChatHeader } from "./ChatHeader";
-import { Box, Grid, Separator } from "@radix-ui/themes";
+import { Box, Grid, ScrollArea } from "@radix-ui/themes";
 import { Composer } from "./Composer";
-import { useState } from "react";
-import { ChatBubble } from "./ChatBubble";
+import { useEffect, useState } from "react";
 import { useThread } from "../hooks/useThread";
 import { EmptyChatPanel } from "./EmptyChatPanel";
+import { List as listMessages } from "../../wailsjs/go/bindings/Message";
+import { MessageList, type Message } from "./MessageList";
 
 export type ChatPanelProps = {};
 
 export function ChatPanel({}: ChatPanelProps) {
   const { thread } = useThread();
-
+  const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState<string>("");
-  const message = {
-    text: "Hello Assistant! This is going to be longggggg message from the user to the LLM AI model.",
-    timestamp: new Date(2026, 6, 23, 4, 30),
+
+  const loadMessages = async (threadId: string) => {
+    const records = (await listMessages(threadId)) ?? [];
+    const msgs: Message[] = records.map((msg) => ({
+      id: msg.ID,
+      role: msg.Role,
+      content: msg.Content,
+      threadId: msg.Thread,
+      created: new Date(msg.Created),
+    }));
+    setMessages(msgs);
   };
+
+  useEffect(() => {
+    if (!thread?.id) {
+      setMessages([]);
+    } else {
+      loadMessages(thread.id);
+    }
+  }, [thread?.id]);
 
   if (!thread) {
     return <EmptyChatPanel />;
   }
 
   return (
-    <Box
-      height="100%"
+    <Grid
+      columns="1fr"
+      rows="auto 1fr auto"
       style={{
         borderLeft: "1px solid var(--gray-6)",
         borderRight: "1px solid var(--gray-6)",
       }}
+      overflow="hidden"
     >
       <ChatHeader title={thread.title} />
-      <Separator orientation="horizontal" size="4" decorative />
-      <Grid
-        as="div"
-        columns="1"
-        rows="1fr auto"
-        width="auto"
-        height="calc(100% - 3.6rem - 1px)"
+      <ScrollArea
+        size="1"
+        scrollbars="vertical"
+        type="hover"
+        style={{
+          background: "var(--gray-1)",
+        }}
       >
-        <Box p="2" style={{ background: "var(--gray-2)" }}>
-          <ChatBubble message={message} />
-        </Box>
-        <Box>
-          <Composer value={draft} onValueChange={setDraft} onSend={() => {}} />
-        </Box>
-      </Grid>
-    </Box>
+        <Grid
+          as="div"
+          columns="1fr"
+          rows="1fr"
+          p="3"
+          gap="4"
+          height="100%"
+          align="end"
+        >
+          <MessageList messages={messages} />
+          <Box height="1000px"></Box>
+        </Grid>
+      </ScrollArea>
+      <Composer value={draft} onValueChange={setDraft} onSend={() => {}} />
+    </Grid>
   );
 }

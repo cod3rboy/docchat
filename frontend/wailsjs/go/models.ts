@@ -63,6 +63,31 @@ export namespace document {
 
 }
 
+export namespace message {
+	
+	export class Message {
+	    ID: string;
+	    Role: string;
+	    Content: string;
+	    Thread: string;
+	    Created: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Message(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.ID = source["ID"];
+	        this.Role = source["Role"];
+	        this.Content = source["Content"];
+	        this.Thread = source["Thread"];
+	        this.Created = source["Created"];
+	    }
+	}
+
+}
+
 export namespace thread {
 	
 	export class Thread {

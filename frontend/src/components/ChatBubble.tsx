@@ -4,21 +4,31 @@ import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 
 export type Message = {
-  text: string;
-  timestamp: Date;
+  id: string;
+  role: string;
+  content: string;
+  threadId: string;
+  created: Date;
 };
+
+export type BubblePosition = "start" | "end";
 
 export interface ChatBubbleProps {
   message: Message;
   onCopy?: (message: string) => void;
+  position?: BubblePosition;
 }
 
-export function ChatBubble({ message, onCopy }: ChatBubbleProps) {
+export function ChatBubble({
+  message,
+  onCopy,
+  position = "end",
+}: ChatBubbleProps) {
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(message.text);
+      await navigator.clipboard.writeText(message.content);
       setIsCopied(true);
       setTimeout(() => {
         setIsCopied(false);
@@ -27,14 +37,14 @@ export function ChatBubble({ message, onCopy }: ChatBubbleProps) {
       // Ignore clipboard failures.
     }
 
-    onCopy?.(message.text);
+    onCopy?.(message.content);
   };
 
   return (
-    <Flex ml="8" justify="end">
+    <Flex justify={position}>
       <Box minWidth="12rem">
         <Card size="2">
-          <Text>{message.text}</Text>
+          <Text>{message.content}</Text>
         </Card>
         <Grid mt="2" rows="1" columns="auto auto" justify="between">
           <Button
@@ -47,9 +57,9 @@ export function ChatBubble({ message, onCopy }: ChatBubbleProps) {
             {isCopied ? <CheckCircledIcon /> : <CopyIcon />}{" "}
             {isCopied ? "Copied!" : "Copy"}
           </Button>
-          <Tooltip content={message.timestamp.toISOString()}>
+          <Tooltip content={message.created.toLocaleString()}>
             <Text color="gray" size="1">
-              {formatDistanceToNow(message.timestamp, { addSuffix: true })}
+              {formatDistanceToNow(message.created, { addSuffix: true })}
             </Text>
           </Tooltip>
         </Grid>

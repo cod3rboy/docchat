@@ -15,6 +15,9 @@ export function ChatHeader({ title }: ChatHeaderProps) {
       height="3.6rem"
       overflow="hidden"
       gap="2"
+      style={{
+        borderBottom: "1px solid var(--gray-6)",
+      }}
     >
       <QuoteIcon />
       <Box as="div">
