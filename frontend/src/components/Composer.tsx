@@ -1,11 +1,15 @@
 import * as React from "react";
 import { Box, Flex, IconButton } from "@radix-ui/themes";
-import { PaperPlaneIcon } from "@radix-ui/react-icons";
+import { PaperPlaneIcon, StopIcon } from "@radix-ui/react-icons";
+
+export type Action = "send" | "stop";
 
 export interface ComposerProps {
   value: string;
   onValueChange: (value: string) => void;
-  onSend: () => void;
+  action: Action;
+  onSend?: () => void;
+  onStop?: () => void;
   placeholder?: string;
   disabled?: boolean;
   minRows?: number;
@@ -15,7 +19,9 @@ export interface ComposerProps {
 export function Composer({
   value,
   onValueChange,
+  action,
   onSend,
+  onStop,
   placeholder = "Type your message...",
   disabled = false,
   minRows = 1,
@@ -56,7 +62,7 @@ export function Composer({
 
     if (!trimmed) return;
 
-    onSend();
+    if (onSend) onSend();
   };
 
   return (
@@ -88,15 +94,29 @@ export function Composer({
           }}
         />
 
-        <IconButton
-          radius="full"
-          size="3"
-          onClick={submit}
-          disabled={disabled || !value.trim()}
-          aria-label="Send message"
-        >
-          <PaperPlaneIcon width={18} height={18} />
-        </IconButton>
+        {action === "send" && (
+          <IconButton
+            radius="full"
+            size="3"
+            onClick={submit}
+            disabled={disabled || !value.trim()}
+            aria-label="Send message"
+          >
+            <PaperPlaneIcon width={18} height={18} />
+          </IconButton>
+        )}
+
+        {action === "stop" && (
+          <IconButton
+            variant="soft"
+            radius="full"
+            size="3"
+            onClick={onStop}
+            aria-label="Stop"
+          >
+            <StopIcon width={18} height={18} />
+          </IconButton>
+        )}
       </Flex>
     </Box>
   );
