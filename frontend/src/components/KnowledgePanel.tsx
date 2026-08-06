@@ -15,6 +15,7 @@ import {
   Add as addDocument,
 } from "../../wailsjs/go/bindings/Document";
 import { Document } from "../models/document";
+import { useWorkspace } from "../hooks/useWorkspace";
 
 interface KnowledgePanelProps {
   workspaceId: string;
@@ -22,6 +23,7 @@ interface KnowledgePanelProps {
 
 export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
   const [documents, setDocuments] = useState<Document[]>([]);
+  const { workspace } = useWorkspace();
 
   const loadDocuments = async () => {
     const docList = (await listDocuments(workspaceId)) ?? [];
@@ -38,7 +40,7 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
 
   useEffect(() => {
     loadDocuments();
-  }, []);
+  }, [workspace.id]);
 
   return (
     <Grid mt="2" columns="1" rows="auto 1fr" overflow="hidden">
