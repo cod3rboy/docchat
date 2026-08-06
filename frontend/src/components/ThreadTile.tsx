@@ -2,13 +2,7 @@ import { useState } from "react";
 import { Em, Flex, Grid, IconButton, Popover, Text } from "@radix-ui/themes";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { ThreadFormPopover } from "./ThreadFormPopover";
-
-export interface Thread {
-  id: string;
-  title: string;
-  workspaceId: string;
-  created: string;
-}
+import { Thread } from "../models/thread";
 
 export interface ThreadTileProps {
   thread: Thread;
@@ -30,7 +24,8 @@ export function ThreadTile({
   const activeClasses = "cursor-default bg-gray-100 rounded-2xl";
 
   const handleRename = (threadTitle: string) => {
-    onRename({ ...thread, title: threadTitle });
+    thread.changeTitle(threadTitle);
+    onRename(thread);
   };
 
   return (

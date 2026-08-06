@@ -1,6 +1,5 @@
-import { type Thread, ThreadTile } from "./ThreadTile";
-
-export { type Thread } from "./ThreadTile";
+import { ThreadTile } from "./ThreadTile";
+import { Thread } from "../models/thread";
 
 export interface ThreadListProps {
   threads: Thread[];

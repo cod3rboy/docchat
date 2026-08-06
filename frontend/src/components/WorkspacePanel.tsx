@@ -1,13 +1,11 @@
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Flex, Heading, IconButton } from "@radix-ui/themes";
 import {
-  type Workspace,
   type WorkspaceSelectorProps,
   WorkspaceSelector,
 } from "./WorkspaceSelector";
 import { WorkspaceFormPopover } from "./WorkspaceFormPopover";
-
-export { type Workspace } from "./WorkspaceSelector";
+import { Workspace } from "../models/workspace";
 
 export interface WorkspacePanelProps {
   workspaces: Workspace[];

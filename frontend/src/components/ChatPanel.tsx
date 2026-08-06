@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { useThread } from "../hooks/useThread";
 import { EmptyChatPanel } from "./EmptyChatPanel";
 import { List as listMessages } from "../../wailsjs/go/bindings/Message";
-import { MessageList, type Message } from "./MessageList";
+import { MessageList } from "./MessageList";
+import { Message } from "../models/message";
 
 export type ChatPanelProps = {};
 
@@ -16,13 +17,7 @@ export function ChatPanel({}: ChatPanelProps) {
 
   const loadMessages = async (threadId: string) => {
     const records = (await listMessages(threadId)) ?? [];
-    const msgs: Message[] = records.map((msg) => ({
-      id: msg.ID,
-      role: msg.Role,
-      content: msg.Content,
-      threadId: msg.Thread,
-      created: new Date(msg.Created),
-    }));
+    const msgs = records.map((record) => new Message(record));
     setMessages(msgs);
   };
 

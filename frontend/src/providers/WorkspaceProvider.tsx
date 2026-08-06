@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useState } from "react";
-import { Workspace } from "../components/WorkspaceSelector";
+import { Workspace } from "../models/workspace";
 
 export interface WorkspaceContextType {
   workspace: Workspace;
@@ -7,12 +7,13 @@ export interface WorkspaceContextType {
   changeToDefaultWorkspace: () => void;
 }
 
-const defaultWorkspace: Workspace = {
-  id: "3HG2ny2C5QUnpOHuOHrEXUk6PXG",
-  name: "Default",
-  canDelete: false,
-  canRename: false,
-};
+const defaultWorkspace = new Workspace({
+  ID: "3HG2ny2C5QUnpOHuOHrEXUk6PXG",
+  Name: "Default",
+  Candelete: false,
+  Canrename: false,
+  Created: "2026-07-06T05:36:20Z",
+});
 
 export const WorkspaceContext = createContext<WorkspaceContextType>({
   workspace: defaultWorkspace,

@@ -1,12 +1,6 @@
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { useWorkspace } from "../hooks/useWorkspace";
-
-export interface Thread {
-  id: string;
-  title: string;
-  workspaceId: string;
-  created: string;
-}
+import { Thread } from "../models/thread";
 
 export interface ThreadContextType {
   thread: Thread | null;

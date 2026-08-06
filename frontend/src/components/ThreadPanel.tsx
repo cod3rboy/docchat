@@ -8,7 +8,7 @@ import {
   ScrollArea,
   Tooltip,
 } from "@radix-ui/themes";
-import { ThreadList, type Thread } from "./ThreadList";
+import { ThreadList } from "./ThreadList";
 import {
   List as listThreads,
   Create as createThread,
@@ -17,6 +17,7 @@ import {
 } from "../../wailsjs/go/bindings/Thread";
 import { useWorkspace } from "../hooks/useWorkspace";
 import { useThread } from "../hooks/useThread";
+import { Thread } from "../models/thread";
 
 export interface ThreadPanelProps {}
 
@@ -27,12 +28,7 @@ export function ThreadPanel({}: ThreadPanelProps) {
 
   const loadThreads = async () => {
     const records = (await listThreads(workspace.id)) ?? [];
-    const threads: Thread[] = records.map((r) => ({
-      id: r.ID,
-      title: r.Title,
-      workspaceId: r.Workspace,
-      created: r.Created,
-    }));
+    const threads = records.map((record) => new Thread(record));
 
     setThreads(threads);
   };

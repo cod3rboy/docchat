@@ -14,31 +14,7 @@ import {
   List as listDocuments,
   Add as addDocument,
 } from "../../wailsjs/go/bindings/Document";
-import pdf from "../assets/images/filetypes/pdf.png";
-import text from "../assets/images/filetypes/txt.png";
-import markdown from "../assets/images/filetypes/md.png";
-import unknown from "../assets/images/filetypes/unknown.png";
-
-type Document = {
-  id: string;
-  title: string;
-  extension: string;
-  workspaceId: string;
-  created: string;
-};
-
-function getDocumentFileIcon(extension: string): string {
-  switch (extension) {
-    case "pdf":
-      return pdf;
-    case "txt":
-      return text;
-    case "md":
-      return markdown;
-    default:
-      return unknown;
-  }
-}
+import { Document } from "../models/document";
 
 interface KnowledgePanelProps {
   workspaceId: string;
@@ -49,13 +25,7 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
 
   const loadDocuments = async () => {
     const docList = (await listDocuments(workspaceId)) ?? [];
-    const docs: Document[] = docList.map((doc) => ({
-      id: doc.ID,
-      title: doc.Title,
-      extension: doc.Extension,
-      workspaceId: doc.Workspace,
-      created: doc.Created,
-    }));
+    const docs = docList.map((doc) => new Document(doc));
 
     setDocuments(docs);
   };
@@ -91,9 +61,9 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
       </Flex>
       <ScrollArea size="1" scrollbars="vertical" type="hover">
         <Grid columns="2" gap="2" p="2">
-          {documents.map(({ id, title, extension }) => (
+          {documents.map((doc) => (
             <Flex
-              key={id}
+              key={doc.id}
               px="2"
               py="4"
               direction="column"
@@ -108,11 +78,11 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
                 style={{ margin: "0 auto" }}
                 width="32"
                 height="32"
-                src={getDocumentFileIcon(extension)}
+                src={doc.fileIcon}
               />
-              <Tooltip content={title + "." + extension}>
+              <Tooltip content={doc.fileName}>
                 <Text align="center" size="2" truncate>
-                  {title}
+                  {doc.title}
                 </Text>
               </Tooltip>
             </Flex>

@@ -1,15 +1,7 @@
 import { Box, Button, Card, Flex, Grid, Text, Tooltip } from "@radix-ui/themes";
 import { CheckCircledIcon, CopyIcon } from "@radix-ui/react-icons";
-import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
-
-export type Message = {
-  id: string;
-  role: string;
-  content: string;
-  threadId: string;
-  created: Date;
-};
+import { Message } from "../models/message";
+import { useClipboardCopy } from "../hooks/useClipboardCopy";
 
 export type BubblePosition = "start" | "end";
 
@@ -24,19 +16,10 @@ export function ChatBubble({
   onCopy,
   position = "end",
 }: ChatBubbleProps) {
-  const [isCopied, setIsCopied] = useState<boolean>(false);
+  const { copied, copy } = useClipboardCopy();
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(message.content);
-      setIsCopied(true);
-      setTimeout(() => {
-        setIsCopied(false);
-      }, 2000);
-    } catch {
-      // Ignore clipboard failures.
-    }
-
+  const handleCopy = () => {
+    copy(message.content);
     onCopy?.(message.content);
   };
 
@@ -54,12 +37,12 @@ export function ChatBubble({
             variant="ghost"
             onClick={handleCopy}
           >
-            {isCopied ? <CheckCircledIcon /> : <CopyIcon />}{" "}
-            {isCopied ? "Copied!" : "Copy"}
+            {copied ? <CheckCircledIcon /> : <CopyIcon />}
+            {copied ? "Copied!" : "Copy"}
           </Button>
-          <Tooltip content={message.created.toLocaleString()}>
+          <Tooltip content={message.localTimestamp}>
             <Text color="gray" size="1">
-              {formatDistanceToNow(message.created, { addSuffix: true })}
+              {message.friendlyTimestamp}
             </Text>
           </Tooltip>
         </Grid>

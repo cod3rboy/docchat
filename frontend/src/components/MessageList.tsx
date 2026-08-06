@@ -1,8 +1,6 @@
-import { type Message } from "./ChatBubble";
+import { Message } from "../models/message";
 import { UserChatBubble } from "./UserChatBubble";
 import { AssistantChatReply } from "./AssistantChatReply";
-
-export { type Message } from "./ChatBubble";
 
 export interface MessageListProps {
   messages: Message[];

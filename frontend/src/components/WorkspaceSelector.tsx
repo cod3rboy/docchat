@@ -1,13 +1,7 @@
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { Em, Flex, IconButton, Popover, Select, Text } from "@radix-ui/themes";
 import { WorkspaceFormPopover } from "./WorkspaceFormPopover";
-
-export type Workspace = {
-  id: string;
-  name: string;
-  canDelete: boolean;
-  canRename: boolean;
-};
+import { Workspace } from "../models/workspace";
 
 export interface WorkspaceSelectorProps {
   workspaces: Workspace[];

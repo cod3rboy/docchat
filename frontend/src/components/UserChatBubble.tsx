@@ -2,8 +2,6 @@ import { Avatar, Grid } from "@radix-ui/themes";
 import { ChatBubble, ChatBubbleProps } from "./ChatBubble";
 import AvatarPerson from "../assets/images/avatar_person.svg";
 
-export { type Message } from "./ChatBubble";
-
 export type UserChatBubbleProps = {} & ChatBubbleProps;
 
 export function UserChatBubble(props: UserChatBubbleProps) {

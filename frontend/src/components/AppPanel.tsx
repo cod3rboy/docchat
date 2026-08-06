@@ -6,7 +6,8 @@ import {
   IconButton,
   Tooltip,
 } from "@radix-ui/themes";
-import { WorkspacePanel, type Workspace } from "./WorkspacePanel";
+import { WorkspacePanel } from "./WorkspacePanel";
+import { Workspace } from "../models/workspace";
 import { KnowledgePanel } from "./KnowledgePanel";
 import { GearIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
@@ -26,29 +27,19 @@ export function AppPanel() {
     changeToDefaultWorkspace,
   } = useWorkspace();
 
+  const loadWorkspaces = async () => {
+    const records = (await listWorkspaces()) ?? [];
+    const workspaces = records.map((record) => new Workspace(record));
+    setWorkspaces(workspaces);
+  };
+
   useEffect(() => {
-    (async () => {
-      const workspaces = await listWorkspaces();
-      setWorkspaces(
-        workspaces.map((ws) => ({
-          id: ws.ID,
-          name: ws.Name,
-          canDelete: ws.Candelete,
-          canRename: ws.Canrename,
-        })),
-      );
-    })();
+    loadWorkspaces();
   }, []);
 
   const addWorkspace = async (workspaceName: string) => {
     const record = await createWorkspace(workspaceName);
-    const workspace: Workspace = {
-      id: record.ID,
-      name: record.Name,
-      canDelete: record.Candelete,
-      canRename: record.Canrename,
-    };
-
+    const workspace = new Workspace(record);
     setWorkspaces((workspaces) => [workspace, ...workspaces]);
   };
 
@@ -82,7 +73,7 @@ export function AppPanel() {
     const record = await renameWorkspace(workspaceId, name);
 
     setWorkspaces((workspaces) => {
-      workspaces[idx].name = record.Name;
+      workspaces[idx] = new Workspace(record);
       return [...workspaces];
     });
   };
