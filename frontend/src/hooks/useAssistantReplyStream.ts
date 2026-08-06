@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
 import { StreamReply, StopStreamReply } from "../../wailsjs/go/bindings/LLM";
 
@@ -26,6 +26,10 @@ export function useAssistantReplyStream({
 
   const stream = useCallback(async () => {
     try {
+      EventsOn(streamId, (msg: string) => {
+        setMessage(msg);
+      });
+
       setMessage("");
       setIsStreaming(true);
       const messagePromise = StreamReply(streamId);
@@ -37,6 +41,7 @@ export function useAssistantReplyStream({
       console.error(err);
       if (onStreamError) onStreamError(err);
     } finally {
+      EventsOff(streamId);
       setIsStreaming(false);
       setMessage("");
     }
@@ -45,14 +50,6 @@ export function useAssistantReplyStream({
   const endStream = useCallback(async () => {
     await StopStreamReply(streamId);
   }, [streamId]);
-
-  useEffect(() => {
-    EventsOn(streamId, function (msg: string) {
-      setMessage(msg);
-    });
-
-    return () => EventsOff(streamId);
-  }, []);
 
   return useMemo(
     () => ({
