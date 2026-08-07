@@ -24,7 +24,7 @@ export interface ThreadPanelProps {}
 export function ThreadPanel({}: ThreadPanelProps) {
   const [threads, setThreads] = useState<Thread[]>([]);
   const { workspace } = useWorkspace();
-  const { thread, changeThread } = useThread();
+  const { thread, changeThread, clearThread } = useThread();
 
   const loadThreads = async () => {
     const records = (await listThreads(workspace.id)) ?? [];
@@ -41,8 +41,11 @@ export function ThreadPanel({}: ThreadPanelProps) {
     await renameThread(thread.id, thread.title);
     loadThreads();
   };
-  const handleDeleteThread = async (thread: Thread) => {
-    await deleteThread(thread.id);
+  const handleDeleteThread = async (t: Thread) => {
+    await deleteThread(t.id);
+    if (thread?.id === t.id) {
+      clearThread();
+    }
     loadThreads();
   };
   const handleSelectThread = async (thread: Thread) => {
