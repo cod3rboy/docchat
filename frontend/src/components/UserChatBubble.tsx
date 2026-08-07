@@ -9,7 +9,7 @@ export type UserChatBubbleProps = {
 
 export function UserChatBubble({ message }: UserChatBubbleProps) {
   return (
-    <Grid columns="1fr auto" gap="2">
+    <Grid columns="1fr auto" gap="2" ml="8">
       <ChatBubble
         content={message.content}
         localTimestamp={message.localTimestamp}

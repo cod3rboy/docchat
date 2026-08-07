@@ -21,7 +21,7 @@ export function Conversation({
       columns="1fr"
       rows="1fr"
       p="3"
-      gap="4"
+      gap="6"
       height="100%"
       align="end"
     >

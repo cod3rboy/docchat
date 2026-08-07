@@ -10,7 +10,7 @@ export function AssistantChatReplyStream({
   content,
 }: AssistantChatReplyStreamProps) {
   return (
-    <Grid columns="auto 1fr" gap="2">
+    <Grid columns="auto 1fr" gap="2" mr="8">
       <Flex direction="column" align="center">
         <Avatar src={AvatarBot} fallback="bot" />
         <Spinner />

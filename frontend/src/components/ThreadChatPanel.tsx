@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Grid, ScrollArea } from "@radix-ui/themes";
 import { ChatHeader } from "./ChatHeader";
 import { Conversation } from "./Conversation";
 import { Composer } from "./Composer";
 import { Thread } from "../models/thread";
 import { Message } from "../models/message";
-import { List as listMessages } from "../../wailsjs/go/bindings/Message";
+import {
+  List as listMessages,
+  Create as createMessage,
+} from "../../wailsjs/go/bindings/Message";
 import { useAssistantReplyStream } from "../hooks/useAssistantReplyStream";
 
 export interface ThreadChatPanelProps {
@@ -15,9 +18,23 @@ export interface ThreadChatPanelProps {
 export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState<string>("");
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const { isStreaming, message, stream, endStream } = useAssistantReplyStream({
     streamId: thread.id,
+    onStreamEnd: async (message) => {
+      const record = await createMessage(message, "assistant", thread.id);
+      const msg = new Message(record);
+      setMessages((msgs) => [msg, ...msgs]);
+    },
   });
+
+  const scrollToBottom = useCallback(() => {
+    const root = scrollRef.current;
+    if (root === null) return;
+    console.log("#scrollToBottom");
+    root.scrollTo({ top: root.scrollHeight, behavior: "smooth" });
+  }, [scrollRef]);
 
   const loadMessages = async (threadId: string) => {
     const records = (await listMessages(threadId)) ?? [];
@@ -26,8 +43,12 @@ export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
   };
 
   const handleSendDraft = async () => {
-    stream();
+    const record = await createMessage(draft, "user", thread.id);
+    const msg = new Message(record);
+    const msgs = messages.toReversed();
+    stream([...msgs, msg]);
     setDraft("");
+    setMessages((msgs) => [msg, ...msgs]);
   };
 
   const handleStopReply = async () => {
@@ -37,6 +58,10 @@ export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
   useEffect(() => {
     loadMessages(thread.id);
   }, [thread.id]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, message]);
 
   const inputPlaceholderText = !isStreaming
     ? "Type your message..."
@@ -54,6 +79,7 @@ export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
     >
       <ChatHeader title={thread.title} />
       <ScrollArea
+        ref={scrollRef}
         size="1"
         scrollbars="vertical"
         type="hover"

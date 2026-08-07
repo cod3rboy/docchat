@@ -1,3 +1,22 @@
+export namespace assistant {
+	
+	export class Message {
+	    Content: string;
+	    Role: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Message(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Content = source["Content"];
+	        this.Role = source["Role"];
+	    }
+	}
+
+}
+
 export namespace document {
 	
 	export class CreateDocumentRow {

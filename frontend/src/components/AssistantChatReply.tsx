@@ -9,7 +9,7 @@ export type AssistantChatReplyProps = {
 
 export function AssistantChatReply({ message }: AssistantChatReplyProps) {
   return (
-    <Grid columns="auto 1fr" gap="2">
+    <Grid columns="auto 1fr" gap="2" mr="8">
       <Avatar src={AvatarBot} fallback="bot" />
       <ChatBubble
         position="start"

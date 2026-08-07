@@ -6,6 +6,6 @@ export function StopStreamReply(arg1) {
   return window['go']['bindings']['LLM']['StopStreamReply'](arg1);
 }
 
-export function StreamReply(arg1) {
-  return window['go']['bindings']['LLM']['StreamReply'](arg1);
+export function StreamReply(arg1, arg2) {
+  return window['go']['bindings']['LLM']['StreamReply'](arg1, arg2);
 }

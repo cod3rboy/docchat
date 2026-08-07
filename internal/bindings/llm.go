@@ -2,9 +2,9 @@ package bindings
 
 import (
 	"strings"
-	"time"
 
 	"github.com/cod3rboy/docchat/internal/app"
+	"github.com/cod3rboy/docchat/internal/assistant"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -14,20 +14,25 @@ type LLM struct {
 	app *app.App
 
 	stopSignals map[string]StopEventChan
+	assistant   assistant.Assistant
 }
 
 func NewLLM(app *app.App) *LLM {
+	assistant, _ := assistant.NewOllama()
+
 	return &LLM{
 		app:         app,
 		stopSignals: make(map[string]StopEventChan),
+		assistant:   assistant,
 	}
 }
 
-func (l *LLM) StreamReply(replyEventName string) string {
-	// TODO: replace the mock with real implementation
-	response := "Hello, my pleasure to be your assistant! If you have any query you can ask me in the box below. Looking forward to have great conversation with you!"
-
-	tokens := strings.Split(response, " ")
+func (l *LLM) StreamReply(conversation []assistant.Message, replyEventName string) (string, error) {
+	chunks, errs := l.assistant.StreamReply(
+		l.app.Context(),
+		"gemma4:e2b",
+		conversation,
+	)
 
 	stopSignal := make(StopEventChan, 1)
 	l.stopSignals[replyEventName] = stopSignal
@@ -38,22 +43,31 @@ func (l *LLM) StreamReply(replyEventName string) string {
 
 	stop := false
 	reply := strings.Builder{}
-	for _, token := range tokens {
+	message := ""
+	for {
 		stop = false
 		select {
+		case chunk, ok := <-chunks:
+			if !ok {
+				stop = true
+			} else {
+				reply.WriteString(chunk)
+				reply.WriteString(" ")
+				message = strings.TrimSpace(reply.String())
+				runtime.EventsEmit(l.app.Context(), replyEventName, message)
+			}
 		case <-stopSignal:
 			stop = true
-		case <-time.After(1 * time.Second):
-			reply.WriteString(token)
-			reply.WriteString(" ")
-			runtime.EventsEmit(l.app.Context(), replyEventName, strings.TrimSpace(reply.String()))
+		case <-l.app.Context().Done():
+			stop = true
 		}
+
 		if stop {
 			break
 		}
 	}
 
-	return strings.TrimSpace(reply.String())
+	return message, <-errs
 }
 
 func (l *LLM) StopStreamReply(replyEventName string) {
