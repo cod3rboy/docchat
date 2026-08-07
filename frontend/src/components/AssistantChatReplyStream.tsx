@@ -1,4 +1,4 @@
-import { Avatar, Flex, Grid, Spinner } from "@radix-ui/themes";
+import { Avatar, Flex, Grid, Skeleton, Spinner, Text } from "@radix-ui/themes";
 import AvatarBot from "../assets/images/avatar_bot.svg";
 import { ChatBubble } from "./ChatBubble";
 
@@ -20,7 +20,19 @@ export function AssistantChatReplyStream({
         content={content}
         hideCopy={true}
         hideTimestamp={true}
-      />
+      >
+        {!content && (
+          <Flex direction="column" align="start" justify="center" gap="2">
+            <Text size="2" color="gray" style={{ fontStyle: "italic" }}>
+              Thinking ...
+            </Text>
+            <Flex direction="column" gap="2">
+              <Skeleton height="0.8rem" width="20rem" />
+              <Skeleton height="0.8rem" width="20rem" />
+            </Flex>
+          </Flex>
+        )}
+      </ChatBubble>
     </Grid>
   );
 }

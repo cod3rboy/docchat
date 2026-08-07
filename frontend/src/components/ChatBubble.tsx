@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import { Box, Button, Card, Flex, Grid, Text, Tooltip } from "@radix-ui/themes";
 import { CheckCircledIcon, CopyIcon } from "@radix-ui/react-icons";
 import { useClipboardCopy } from "../hooks/useClipboardCopy";
@@ -19,10 +20,11 @@ export function ChatBubble({
   localTimestamp,
   friendlyTimestamp,
   onCopy,
+  children,
   position = "end",
   hideTimestamp = false,
   hideCopy = false,
-}: ChatBubbleProps) {
+}: PropsWithChildren<ChatBubbleProps>) {
   const { copied, copy } = useClipboardCopy();
 
   const handleCopy = () => {
@@ -35,6 +37,7 @@ export function ChatBubble({
       <Box minWidth="12rem">
         <Card size="2">
           <Text>{content}</Text>
+          {children}
         </Card>
         <Grid
           mt="2"
