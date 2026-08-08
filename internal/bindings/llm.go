@@ -52,8 +52,7 @@ func (l *LLM) StreamReply(conversation []assistant.Message, replyEventName strin
 				stop = true
 			} else {
 				reply.WriteString(chunk)
-				reply.WriteString(" ")
-				message = strings.TrimSpace(reply.String())
+				message = reply.String()
 				runtime.EventsEmit(l.app.Context(), replyEventName, message)
 			}
 		case <-stopSignal:

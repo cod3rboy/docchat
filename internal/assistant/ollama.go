@@ -57,8 +57,8 @@ func (o *ollamaAssistant) StreamReply(
 	chunks, errs := o.CompletionStream(ctx, anyllm.CompletionParams{
 		Model:       model,
 		Messages:    messages,
-		Temperature: new(0.5),
-		TopP:        new(0.5),
+		Temperature: new(1.0),
+		TopP:        new(0.95),
 	})
 
 	_chunks := make(chan string, cap(chunks))
