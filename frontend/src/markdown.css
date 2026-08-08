@@ -1,0 +1,5 @@
+/* styles for block code */
+pre > code {
+  border: 1px solid var(--gray-6);
+  max-height: 50rem;
+}
