@@ -3,6 +3,8 @@ module github.com/cod3rboy/docchat
 go 1.26
 
 require (
+	github.com/dslipak/pdf v0.0.2
+	github.com/huantt/plaintext-extractor v1.1.0
 	github.com/mozilla-ai/any-llm-go v0.9.0
 	github.com/segmentio/ksuid v1.0.4
 	github.com/wailsapp/wails/v2 v2.13.0
@@ -42,10 +44,10 @@ require (
 	github.com/wailsapp/go-webview2 v1.0.22 // indirect
 	github.com/wailsapp/mimetype v1.4.1 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
-	golang.org/x/crypto v0.51.0 // indirect
-	golang.org/x/net v0.54.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.74.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
