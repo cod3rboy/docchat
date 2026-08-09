@@ -1,4 +1,4 @@
-import { message, assistant } from "../../wailsjs/go/models";
+import { message, ai } from "../../wailsjs/go/models";
 import { formatDistanceToNow } from "date-fns";
 
 export class Message {
@@ -24,7 +24,7 @@ export class Message {
     return formatDistanceToNow(this.created, { addSuffix: true });
   }
 
-  public toAssistantMessage(): assistant.Message {
+  public toAssistantMessage(): ai.Message {
     return {
       Content: this.content,
       Role: this.role,

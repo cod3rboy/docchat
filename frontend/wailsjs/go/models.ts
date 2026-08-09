@@ -1,4 +1,4 @@
-export namespace assistant {
+export namespace ai {
 	
 	export class Message {
 	    Content: string;

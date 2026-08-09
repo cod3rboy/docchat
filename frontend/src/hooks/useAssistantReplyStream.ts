@@ -1,6 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
-import { StreamReply, StopStreamReply } from "../../wailsjs/go/bindings/LLM";
+import {
+  StreamReply,
+  StopStreamReply,
+} from "../../wailsjs/go/bindings/Assistant";
 import { Message } from "../models/message";
 
 export interface UseAssistantReplyStreamHookParams {

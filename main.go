@@ -47,7 +47,7 @@ func main() {
 			bindings.NewDocument(app),
 			bindings.NewThread(app),
 			bindings.NewMessage(app),
-			bindings.NewLLM(app),
+			bindings.NewAssistant(app),
 		},
 	})
 
