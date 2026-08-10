@@ -38,5 +38,6 @@ type LLM interface {
 		ctx context.Context,
 		embeddingModel string,
 		content string,
+		dimensions int,
 	) ([]Embedding, error)
 }

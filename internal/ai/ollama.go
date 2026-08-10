@@ -102,12 +102,14 @@ func (o *ollamaLLM) Embedding(
 	ctx context.Context,
 	embeddingModel string,
 	content string,
+	dimensions int,
 ) ([]Embedding, error) {
 	res, err := o.Provider.Embedding(
 		ctx,
 		anyllm.EmbeddingParams{
-			Model: embeddingModel,
-			Input: content,
+			Model:      embeddingModel,
+			Input:      content,
+			Dimensions: &dimensions,
 		},
 	)
 
