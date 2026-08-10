@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime/debug"
 
+	"github.com/cod3rboy/docchat/internal/ai"
 	"github.com/cod3rboy/docchat/internal/db"
 	"github.com/cod3rboy/docchat/internal/prefs"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -14,6 +15,7 @@ import (
 type AppServices struct {
 	DB    *db.DB
 	Prefs *prefs.Prefs
+	LLM   ai.LLM
 }
 
 // App struct
@@ -21,6 +23,7 @@ type App struct {
 	ctx   context.Context
 	DB    *db.DB
 	Prefs *prefs.Prefs
+	LLM   ai.LLM
 }
 
 // New creates a new App application struct
@@ -28,6 +31,7 @@ func New(svcs *AppServices) *App {
 	return &App{
 		DB:    svcs.DB,
 		Prefs: svcs.Prefs,
+		LLM:   svcs.LLM,
 	}
 }
 

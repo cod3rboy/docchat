@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 
+	"github.com/cod3rboy/docchat/internal/ai"
 	"github.com/cod3rboy/docchat/internal/app"
 	"github.com/cod3rboy/docchat/internal/bindings"
 	"github.com/cod3rboy/docchat/internal/db"
@@ -28,9 +29,12 @@ func main() {
 		return
 	}
 
+	llm, _ := ai.NewOllama()
+
 	app := app.New(&app.AppServices{
 		DB:    database,
 		Prefs: preferences,
+		LLM:   llm,
 	})
 
 	// Create application with options
@@ -42,7 +46,7 @@ func main() {
 			Assets: assets,
 		},
 		OnStartup: app.Startup,
-		Bind: []interface{}{
+		Bind: []any{
 			bindings.NewWorkspace(app),
 			bindings.NewDocument(app),
 			bindings.NewThread(app),

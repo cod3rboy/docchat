@@ -12,16 +12,13 @@ type Assistant struct {
 	app *app.App
 
 	stopSignals map[string]StopEventChan
-	llm         ai.LLM
 }
 
 func NewAssistant(app *app.App) *Assistant {
-	llm, _ := ai.NewOllama()
 
 	return &Assistant{
 		app:         app,
 		stopSignals: make(map[string]StopEventChan),
-		llm:         llm,
 	}
 }
 
@@ -30,7 +27,7 @@ func (a *Assistant) StreamReply(
 	replyEventName string,
 ) (string, error) {
 
-	chunks, errs := a.llm.Stream(
+	chunks, errs := a.app.LLM.Stream(
 		a.app.Context(),
 		"gemma4:e2b",
 		conversation,
