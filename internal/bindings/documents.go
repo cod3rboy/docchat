@@ -1,6 +1,8 @@
 package bindings
 
 import (
+	"bytes"
+	"errors"
 	"os"
 	"path/filepath"
 	"slices"
@@ -9,6 +11,8 @@ import (
 
 	"github.com/cod3rboy/docchat/internal/app"
 	"github.com/cod3rboy/docchat/internal/models/document"
+	"github.com/cod3rboy/docchat/internal/text"
+	"github.com/cod3rboy/docchat/internal/vectordb"
 	"github.com/segmentio/ksuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -80,7 +84,7 @@ func (d *Document) Choose(extensions []string) (string, error) {
 }
 
 func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, error) {
-	id := ksuid.New().String()
+	docId := ksuid.New().String()
 	extension := strings.TrimPrefix(filepath.Ext(path), ".")
 	title := strings.TrimSuffix(filepath.Base(path), "."+extension)
 
@@ -89,8 +93,41 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		return document.CreateDocumentRow{}, err
 	}
 
+	plainText, err := d.extractTextFromContent(content, extension)
+	if err != nil {
+		err = errors.Join(errors.New("failed to extract plain text"), err)
+		return document.CreateDocumentRow{}, err
+	}
+
+	// TODO: we may need to break down the plain text into multiple chunks
+	// and separately generate embeddings for each.
+	embeddings, err := d.app.LLM.Embedding(
+		d.app.Context(),
+		"embeddinggemma:latest",
+		plainText,
+		vectordb.VectorDimensions,
+	)
+	if err != nil {
+		err = errors.Join(errors.New("failed to generate embeddings"), err)
+		return document.CreateDocumentRow{}, err
+	}
+
+	for _, embedding := range embeddings {
+		d.app.VectorDB.Add(
+			d.app.Context(),
+			vectordb.Document{
+				ID:          ksuid.New().String(),
+				GroupID:     docId,
+				WorkspaceID: workspaceId,
+				Vector:      embedding.Vector,
+				Content:     embedding.Content,
+				Index:       embedding.Index,
+			},
+		)
+	}
+
 	createParams := document.CreateDocumentParams{
-		ID:        id,
+		ID:        docId,
 		Title:     title,
 		Extension: extension,
 		Content:   content,
@@ -108,4 +145,20 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 
 func (d *Document) Delete(id string) error {
 	return d.app.DB.Documents.DeleteDocument(d.app.Context(), id)
+}
+
+func (d *Document) extractTextFromContent(content []byte, contentType string) (string, error) {
+	var textReader text.TextReader
+	switch contentType {
+	case "pdf":
+		textReader = text.NewPdfReader()
+	case "md":
+		textReader = text.NewMarkdownReader()
+	case "txt":
+		textReader = text.NewPlainTextReader()
+	default:
+		return "", errors.New("unsupported file")
+	}
+
+	return textReader.ReadText(bytes.NewReader(content))
 }

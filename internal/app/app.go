@@ -9,29 +9,34 @@ import (
 	"github.com/cod3rboy/docchat/internal/ai"
 	"github.com/cod3rboy/docchat/internal/db"
 	"github.com/cod3rboy/docchat/internal/prefs"
+	"github.com/cod3rboy/docchat/internal/vectordb"
+
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type AppServices struct {
-	DB    *db.DB
-	Prefs *prefs.Prefs
-	LLM   ai.LLM
+	DB       *db.DB
+	Prefs    *prefs.Prefs
+	LLM      ai.LLM
+	VectorDB vectordb.VectorDB
 }
 
 // App struct
 type App struct {
-	ctx   context.Context
-	DB    *db.DB
-	Prefs *prefs.Prefs
-	LLM   ai.LLM
+	ctx      context.Context
+	DB       *db.DB
+	Prefs    *prefs.Prefs
+	LLM      ai.LLM
+	VectorDB vectordb.VectorDB
 }
 
 // New creates a new App application struct
 func New(svcs *AppServices) *App {
 	return &App{
-		DB:    svcs.DB,
-		Prefs: svcs.Prefs,
-		LLM:   svcs.LLM,
+		DB:       svcs.DB,
+		Prefs:    svcs.Prefs,
+		LLM:      svcs.LLM,
+		VectorDB: svcs.VectorDB,
 	}
 }
 

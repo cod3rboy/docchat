@@ -2,12 +2,17 @@ package main
 
 import (
 	"embed"
+	"errors"
+	"io/fs"
+	"os"
+	"path/filepath"
 
 	"github.com/cod3rboy/docchat/internal/ai"
 	"github.com/cod3rboy/docchat/internal/app"
 	"github.com/cod3rboy/docchat/internal/bindings"
 	"github.com/cod3rboy/docchat/internal/db"
 	"github.com/cod3rboy/docchat/internal/prefs"
+	"github.com/cod3rboy/docchat/internal/vectordb"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -16,7 +21,17 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+const (
+	AppDirName = ".docchat"
+)
+
 func main() {
+	appDir, err := readyAppDirectory()
+	if err != nil {
+		println("Error:", err.Error())
+		return
+	}
+
 	preferences, err := prefs.Load()
 	if err != nil {
 		println("Error:", err.Error())
@@ -31,10 +46,16 @@ func main() {
 
 	llm, _ := ai.NewOllama()
 
+	vdb, err := vectordb.NewChromemVectorDB(appDir)
+	if err != nil {
+		println("Error:", err.Error())
+	}
+
 	app := app.New(&app.AppServices{
-		DB:    database,
-		Prefs: preferences,
-		LLM:   llm,
+		DB:       database,
+		Prefs:    preferences,
+		LLM:      llm,
+		VectorDB: vdb,
 	})
 
 	// Create application with options
@@ -58,4 +79,29 @@ func main() {
 	if err != nil {
 		println("Error:", err.Error())
 	}
+}
+
+func readyAppDirectory() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	appDirectory := filepath.Join(home, AppDirName)
+
+	_, err = os.Stat(appDirectory)
+	if err == nil {
+		return appDirectory, nil
+	}
+
+	if !errors.Is(err, fs.ErrNotExist) {
+		return "", err
+	}
+
+	err = os.Mkdir(appDirectory, 0755)
+	if err != nil {
+		return "", err
+	}
+
+	return appDirectory, nil
 }
