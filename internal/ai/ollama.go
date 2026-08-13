@@ -2,6 +2,7 @@ package ai
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	anyllm "github.com/mozilla-ai/any-llm-go"
@@ -103,7 +104,7 @@ func (o *ollamaLLM) Embedding(
 	embeddingModel string,
 	content string,
 	dimensions int,
-) ([]Embedding, error) {
+) (Embedding, error) {
 	res, err := o.Provider.Embedding(
 		ctx,
 		anyllm.EmbeddingParams{
@@ -114,17 +115,20 @@ func (o *ollamaLLM) Embedding(
 	)
 
 	if err != nil {
-		return nil, err
+		return Embedding{}, err
 	}
 
-	embeds := make([]Embedding, len(res.Data))
-	for i := range len(res.Data) {
-		embeds[i] = Embedding{
-			Vector:  res.Data[i].Embedding,
-			Index:   res.Data[i].Index,
-			Content: res.Data[i].Object,
-		}
+	if len(res.Data) == 0 {
+		return Embedding{}, errors.New("missing embedding from provider")
 	}
 
-	return embeds, nil
+	embeddingData := res.Data[0]
+
+	embedding := Embedding{
+		Vector:  embeddingData.Embedding,
+		Index:   embeddingData.Index,
+		Content: content,
+	}
+
+	return embedding, nil
 }

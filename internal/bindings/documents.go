@@ -101,7 +101,7 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 
 	// TODO: we may need to break down the plain text into multiple chunks
 	// and separately generate embeddings for each.
-	embeddings, err := d.app.LLM.Embedding(
+	embedding, err := d.app.LLM.Embedding(
 		d.app.Context(),
 		"embeddinggemma:latest",
 		plainText,
@@ -112,19 +112,17 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		return document.CreateDocumentRow{}, err
 	}
 
-	for _, embedding := range embeddings {
-		d.app.VectorDB.Add(
-			d.app.Context(),
-			vectordb.Document{
-				ID:          ksuid.New().String(),
-				GroupID:     docId,
-				WorkspaceID: workspaceId,
-				Vector:      embedding.Vector,
-				Content:     embedding.Content,
-				Index:       embedding.Index,
-			},
-		)
-	}
+	d.app.VectorDB.Add(
+		d.app.Context(),
+		vectordb.Document{
+			ID:          ksuid.New().String(),
+			GroupID:     docId,
+			WorkspaceID: workspaceId,
+			Vector:      embedding.Vector,
+			Content:     embedding.Content,
+			Index:       embedding.Index,
+		},
+	)
 
 	createParams := document.CreateDocumentParams{
 		ID:        docId,
