@@ -44,11 +44,16 @@ func main() {
 		return
 	}
 
-	llm, _ := ai.NewOllama()
+	llm, err := ai.NewProvider("http://localhost:11434/v1", "")
+	if err != nil {
+		println("Error:", err.Error())
+		return
+	}
 
 	vdb, err := vectordb.NewChromemVectorDB(appDir)
 	if err != nil {
 		println("Error:", err.Error())
+		return
 	}
 
 	app := app.New(&app.AppServices{

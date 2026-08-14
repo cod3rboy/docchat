@@ -6,25 +6,40 @@ import (
 	"strings"
 
 	anyllm "github.com/mozilla-ai/any-llm-go"
-	"github.com/mozilla-ai/any-llm-go/providers/ollama"
+	"github.com/mozilla-ai/any-llm-go/config"
+	"github.com/mozilla-ai/any-llm-go/providers/openai"
 )
 
-type ollamaLLM struct {
-	*ollama.Provider
+const (
+	ProviderName = "openai-compatible-provider"
+)
+
+type llmProvider struct {
+	provider *openai.CompatibleProvider
 }
 
-func NewOllama() (LLM, error) {
-	provider, err := ollama.New(anyllm.WithBaseURL("http://localhost:11434"))
+func NewProvider(baseUrl, apiKey string) (LLM, error) {
+	providerConfig := openai.CompatibleConfig{
+		Name:          ProviderName,
+		RequireAPIKey: apiKey != "",
+	}
+	providerOptions := make([]config.Option, 0, 2)
+	providerOptions = append(providerOptions, config.WithBaseURL(baseUrl))
+	if providerConfig.RequireAPIKey {
+		providerOptions = append(providerOptions, config.WithAPIKey(apiKey))
+	}
+
+	provider, err := openai.NewCompatible(providerConfig, providerOptions...)
 	if err != nil {
 		return nil, err
 	}
 
-	llm := &ollamaLLM{Provider: provider}
+	llm := &llmProvider{provider: provider}
 
 	return llm, nil
 }
 
-func (o *ollamaLLM) Chat(
+func (p *llmProvider) Chat(
 	ctx context.Context, model string, conversation []Message,
 ) (Message, error) {
 	messages := make([]anyllm.Message, 0, len(conversation))
@@ -35,7 +50,7 @@ func (o *ollamaLLM) Chat(
 		}
 		messages = append(messages, message)
 	}
-	completion, err := o.Completion(
+	completion, err := p.provider.Completion(
 		ctx,
 		anyllm.CompletionParams{
 			Model:       model,
@@ -57,7 +72,7 @@ func (o *ollamaLLM) Chat(
 	return reply, nil
 }
 
-func (o *ollamaLLM) Stream(
+func (p *llmProvider) Stream(
 	ctx context.Context,
 	model string,
 	conversation []Message,
@@ -70,7 +85,7 @@ func (o *ollamaLLM) Stream(
 		}
 		messages = append(messages, message)
 	}
-	chunks, errs := o.CompletionStream(
+	chunks, errs := p.provider.CompletionStream(
 		ctx,
 		anyllm.CompletionParams{
 			Model:       model,
@@ -99,13 +114,13 @@ func (o *ollamaLLM) Stream(
 	return _chunks, errs
 }
 
-func (o *ollamaLLM) Embedding(
+func (p *llmProvider) Embedding(
 	ctx context.Context,
 	embeddingModel string,
 	content string,
 	dimensions int,
 ) (Embedding, error) {
-	res, err := o.Provider.Embedding(
+	res, err := p.provider.Embedding(
 		ctx,
 		anyllm.EmbeddingParams{
 			Model:      embeddingModel,
