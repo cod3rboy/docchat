@@ -32,7 +32,6 @@ export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
   const scrollToBottom = useCallback(() => {
     const root = scrollRef.current;
     if (root === null) return;
-    console.log("#scrollToBottom");
     root.scrollTo({ top: root.scrollHeight, behavior: "smooth" });
   }, [scrollRef]);
 
