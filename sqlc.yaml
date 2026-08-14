@@ -1,33 +1,37 @@
 version: "2"
 sql:
   - engine: "sqlite"
-    queries: "internal/db/workspace.queries.sql"
-    schema: "internal/db/workspace.schema.sql"
+    queries: "internal/db/queries/workspace.sql"
+    schema: "internal/db/migrations"
     gen:
       go:
         package: "workspace"
         out: "internal/models/workspace"
+        emit_interface: true
 
   - engine: "sqlite"
-    queries: "internal/db/document.queries.sql"
-    schema: "internal/db/document.schema.sql"
+    queries: "internal/db/queries/document.sql"
+    schema: "internal/db/migrations"
     gen:
       go:
         package: "document"
         out: "internal/models/document"
+        emit_interface: true
 
   - engine: "sqlite"
-    queries: "internal/db/thread.queries.sql"
-    schema: "internal/db/thread.schema.sql"
+    queries: "internal/db/queries/thread.sql"
+    schema: "internal/db/migrations"
     gen:
       go:
         package: "thread"
         out: "internal/models/thread"
+        emit_interface: true
 
   - engine: "sqlite"
-    queries: "internal/db/message.queries.sql"
-    schema: "internal/db/message.schema.sql"
+    queries: "internal/db/queries/message.sql"
+    schema: "internal/db/migrations"
     gen:
       go:
         package: "message"
         out: "internal/models/message"
+        emit_interface: true

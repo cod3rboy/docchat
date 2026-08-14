@@ -15,7 +15,7 @@ import (
 )
 
 type AppServices struct {
-	DB       *db.DB
+	DB       *db.Database
 	Prefs    *prefs.Prefs
 	LLM      ai.LLM
 	VectorDB vectordb.VectorDB
@@ -24,7 +24,7 @@ type AppServices struct {
 // App struct
 type App struct {
 	ctx      context.Context
-	DB       *db.DB
+	DB       *db.Database
 	Prefs    *prefs.Prefs
 	LLM      ai.LLM
 	VectorDB vectordb.VectorDB

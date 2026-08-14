@@ -38,7 +38,7 @@ func main() {
 		return
 	}
 
-	database, err := db.New()
+	database, err := db.New(appDir, "docchat.db")
 	if err != nil {
 		println("Error:", err.Error())
 		return
