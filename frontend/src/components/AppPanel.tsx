@@ -84,7 +84,7 @@ export function AppPanel() {
         <Flex gap="2" justify="between">
           <Heading as="h1">Doc Chat</Heading>
           <Tooltip content="Settings">
-            <IconButton variant="soft">
+            <IconButton variant="soft" onClick={window.openSettings}>
               <GearIcon />
             </IconButton>
           </Tooltip>
