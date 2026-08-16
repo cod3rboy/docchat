@@ -78,6 +78,7 @@ func main() {
 			bindings.NewThread(app),
 			bindings.NewMessage(app),
 			bindings.NewAssistant(app),
+			bindings.NewSettings(app),
 		},
 	})
 

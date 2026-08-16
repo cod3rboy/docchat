@@ -17,6 +17,29 @@ export namespace ai {
 
 }
 
+export namespace bindings {
+	
+	export class ModelSettings {
+	    apiEndpoint: string;
+	    apiKey: string;
+	    primaryModel: string;
+	    embeddingModel: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ModelSettings(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.apiEndpoint = source["apiEndpoint"];
+	        this.apiKey = source["apiKey"];
+	        this.primaryModel = source["primaryModel"];
+	        this.embeddingModel = source["embeddingModel"];
+	    }
+	}
+
+}
+
 export namespace document {
 	
 	export class CreateDocumentRow {

@@ -8,13 +8,19 @@ import {
   Flex,
   Text,
 } from "@radix-ui/themes";
-import { Cross1Icon, GearIcon } from "@radix-ui/react-icons";
+import { Cross1Icon, CubeIcon, GearIcon } from "@radix-ui/react-icons";
+import { LLMModelSettings } from "./LLMModelSettings";
+import { useModelSettings } from "../hooks/useModelSettings";
+import { useModels } from "../hooks/useModels";
 
 export interface SettingsDialogProps {}
 
 export function SettingsDialog({}: SettingsDialogProps) {
   const [tab, setTab] = useState<string>("models");
   const [open, setOpen] = useState<boolean>(false);
+  const { settings: modelSettings, update: updateModelSettings } =
+    useModelSettings();
+  const { models, listModels } = useModels();
 
   useEffect(() => {
     const openSettings = () => {
@@ -34,13 +40,19 @@ export function SettingsDialog({}: SettingsDialogProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (modelSettings.apiEndpoint === "") return;
+    listModels(modelSettings.apiEndpoint, modelSettings.apiKey);
+  }, [modelSettings.apiEndpoint, modelSettings.apiKey]);
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Content>
+      <Dialog.Content minHeight="32rem">
         <Grid columns="1fr auto" gap="2">
           <Dialog.Title weight="medium">
             <Flex align="center" gap="1">
-              <GearIcon width="1.25rem" height="1.25rem" /> <Text>Settings</Text>
+              <GearIcon width="1.25rem" height="1.25rem" />{" "}
+              <Text>Settings</Text>
             </Flex>
           </Dialog.Title>
           <Dialog.Close>
@@ -51,14 +63,22 @@ export function SettingsDialog({}: SettingsDialogProps) {
         </Grid>
         <Tabs.Root value={tab} onValueChange={setTab}>
           <Tabs.List justify="center">
-            <Tabs.Trigger value="models">Models </Tabs.Trigger>
+            <Tabs.Trigger value="models">
+              <Flex gap="1" align="center">
+                <CubeIcon />
+                <Text>Models</Text>
+              </Flex>
+            </Tabs.Trigger>
             <Tabs.Trigger value="themes">Themes</Tabs.Trigger>
             <Tabs.Trigger value="about">About</Tabs.Trigger>
           </Tabs.List>
           <Box pt="3">
             <Tabs.Content value="models">
-              This is model settings tab content where user can set up model
-              provider, primary model and embedding model.
+              <LLMModelSettings
+                settings={modelSettings}
+                models={models}
+                onUpdate={updateModelSettings}
+              />
             </Tabs.Content>
             <Tabs.Content value="themes">
               This is themes settings tab content where use can choose from a
