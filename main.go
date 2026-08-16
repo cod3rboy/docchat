@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	preferences, err := prefs.Load()
+	preferences, err := prefs.Load(appDir)
 	if err != nil {
 		println("Error:", err.Error())
 		return

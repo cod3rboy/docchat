@@ -6,6 +6,7 @@ require (
 	github.com/dslipak/pdf v0.0.2
 	github.com/huantt/plaintext-extractor v1.1.0
 	github.com/mozilla-ai/any-llm-go v0.9.0
+	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/philippgille/chromem-go v0.7.0
 	github.com/pressly/goose/v3 v3.27.3
 	github.com/segmentio/ksuid v1.0.4

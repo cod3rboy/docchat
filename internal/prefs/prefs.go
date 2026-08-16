@@ -1,63 +1,54 @@
 package prefs
 
 import (
-	"encoding/json"
 	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
+
+	"github.com/pelletier/go-toml/v2"
 )
 
 const (
-	PrefsFile = "preferences.json"
+	PrefsFileName = "preferences.toml"
 )
 
-type Prefs struct {
-	path string
-
-	OllamaURL      string `json:"ollama_url"`
-	InferenceModel string `json:"inference_model"`
-	EmbeddingModel string `json:"embedding_model"`
+type ModelPreferences struct {
+	OpenAICompatAPIURL string `toml:"openai-compat-api-url" comment:"OpenAI compatible API provider endpoint e.g https://example.com/api/v1"`
+	APIKey             string `toml:"api-key" comment:"Secret key required to access provider API, omit if provider does not require it."`
+	PrimaryModel       string `toml:"primary-model" comment:"Model to use for chat inference."`
+	EmbedModel         string `toml:"embed-model" comment:"Model to use for vector emebeddings."`
 }
 
-func Load() (*Prefs, error) {
-	path := filepath.Join(PreferencesDirectory, PrefsFile)
-	homeDir, _ := os.UserHomeDir()
-	if !strings.HasPrefix(path, homeDir) {
-		path = filepath.Join(homeDir, path)
+type Preferences struct {
+	savePath string `toml:"-"`
+
+	Models ModelPreferences `toml:"models" comment:"Configure your LLM provider"`
+}
+
+func Load(appDir string) (Preferences, error) {
+	prefsPath := filepath.Join(appDir, PrefsFileName)
+	preferences := Preferences{
+		savePath: prefsPath,
 	}
 
-	_, err := os.Stat(path)
+	content, err := os.ReadFile(prefsPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		os.MkdirAll(filepath.Dir(path), 0755)
-		os.WriteFile(path, []byte("{}"), 0755)
+		return preferences, nil
+	} else if err != nil {
+		return preferences, err
 	}
 
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
+	err = toml.Unmarshal(content, &preferences)
 
-	prefs := Prefs{
-		path: path,
-	}
-	if err := json.Unmarshal(data, &prefs); err != nil {
-		return nil, err
-	}
-
-	return &prefs, nil
+	return preferences, err
 }
 
-func (p *Prefs) Save() error {
-	if p.path == "" {
-		return nil
-	}
-
-	data, err := json.Marshal(p)
+func (p *Preferences) Save() error {
+	content, err := toml.Marshal(p)
 	if err != nil {
 		return err
 	}
 
-	return os.WriteFile(p.path, data, 0755)
+	return os.WriteFile(p.savePath, content, 0755)
 }
