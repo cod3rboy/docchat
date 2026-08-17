@@ -21,7 +21,12 @@ func NewMessage(app *app.App) *Message {
 }
 
 func (m *Message) List(threadId string) ([]message.Message, error) {
-	msgs, err := m.app.DB.Messages.ListMessages(
+	db, err := m.app.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	msgs, err := db.Messages.ListMessages(
 		m.app.Context(),
 		threadId,
 	)
@@ -30,7 +35,12 @@ func (m *Message) List(threadId string) ([]message.Message, error) {
 }
 
 func (m *Message) Get(msgId string) (message.Message, error) {
-	msg, err := m.app.DB.Messages.GetMessage(
+	db, err := m.app.DB()
+	if err != nil {
+		return message.Message{}, err
+	}
+
+	msg, err := db.Messages.GetMessage(
 		m.app.Context(),
 		msgId,
 	)
@@ -39,6 +49,11 @@ func (m *Message) Get(msgId string) (message.Message, error) {
 }
 
 func (m *Message) Create(content, role, threadId string) (message.Message, error) {
+	db, err := m.app.DB()
+	if err != nil {
+		return message.Message{}, err
+	}
+
 	if strings.TrimSpace(content) == "" {
 		return message.Message{}, errors.New("message content cannot be empty")
 	}
@@ -57,7 +72,7 @@ func (m *Message) Create(content, role, threadId string) (message.Message, error
 		Created: time.Now().UTC().Format(time.RFC3339),
 	}
 
-	msg, err := m.app.DB.Messages.CreateMessage(
+	msg, err := db.Messages.CreateMessage(
 		m.app.Context(),
 		params,
 	)

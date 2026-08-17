@@ -21,7 +21,12 @@ func NewWorkspace(app *app.App) *Workspace {
 }
 
 func (w *Workspace) List() ([]workspace.Workspace, error) {
-	records, err := w.app.DB.Workspaces.ListWorkspaces(w.app.Context())
+	db, err := w.app.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	records, err := db.Workspaces.ListWorkspaces(w.app.Context())
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +35,12 @@ func (w *Workspace) List() ([]workspace.Workspace, error) {
 }
 
 func (w *Workspace) Get(id string) (workspace.Workspace, error) {
-	record, err := w.app.DB.Workspaces.GetWorkspace(w.app.Context(), id)
+	db, err := w.app.DB()
+	if err != nil {
+		return workspace.Workspace{}, err
+	}
+
+	record, err := db.Workspaces.GetWorkspace(w.app.Context(), id)
 	if err != nil {
 		return workspace.Workspace{}, err
 	}
@@ -38,6 +48,11 @@ func (w *Workspace) Get(id string) (workspace.Workspace, error) {
 }
 
 func (w *Workspace) Create(name string) (workspace.Workspace, error) {
+	db, err := w.app.DB()
+	if err != nil {
+		return workspace.Workspace{}, err
+	}
+
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return workspace.Workspace{}, errors.New("workspace name cannot be empty")
@@ -45,7 +60,7 @@ func (w *Workspace) Create(name string) (workspace.Workspace, error) {
 
 	id := ksuid.New().String()
 
-	record, err := w.app.DB.Workspaces.CreateWorkspace(
+	record, err := db.Workspaces.CreateWorkspace(
 		w.app.Context(),
 		workspace.CreateWorkspaceParams{
 			ID:        id,
@@ -62,12 +77,17 @@ func (w *Workspace) Create(name string) (workspace.Workspace, error) {
 }
 
 func (w *Workspace) Rename(id string, name string) (workspace.Workspace, error) {
+	db, err := w.app.DB()
+	if err != nil {
+		return workspace.Workspace{}, err
+	}
+
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return workspace.Workspace{}, errors.New("workspace name cannot be empty")
 	}
 
-	record, err := w.app.DB.Workspaces.UpdateWorkspace(
+	record, err := db.Workspaces.UpdateWorkspace(
 		w.app.Context(),
 		workspace.UpdateWorkspaceParams{
 			ID:   id,
@@ -82,5 +102,10 @@ func (w *Workspace) Rename(id string, name string) (workspace.Workspace, error) 
 }
 
 func (w *Workspace) Delete(id string) error {
-	return w.app.DB.Workspaces.DeleteWorkspace(w.app.Context(), id)
+	db, err := w.app.DB()
+	if err != nil {
+		return err
+	}
+
+	return db.Workspaces.DeleteWorkspace(w.app.Context(), id)
 }

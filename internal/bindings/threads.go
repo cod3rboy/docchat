@@ -21,7 +21,12 @@ func NewThread(app *app.App) *Thread {
 }
 
 func (t *Thread) List(workspaceId string) ([]thread.Thread, error) {
-	records, err := t.app.DB.Threads.ListThreads(
+	db, err := t.app.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	records, err := db.Threads.ListThreads(
 		t.app.Context(),
 		workspaceId,
 	)
@@ -30,7 +35,12 @@ func (t *Thread) List(workspaceId string) ([]thread.Thread, error) {
 }
 
 func (t *Thread) Get(id string) (thread.Thread, error) {
-	record, err := t.app.DB.Threads.GetThread(
+	db, err := t.app.DB()
+	if err != nil {
+		return thread.Thread{}, err
+	}
+
+	record, err := db.Threads.GetThread(
 		t.app.Context(),
 		id,
 	)
@@ -39,6 +49,11 @@ func (t *Thread) Get(id string) (thread.Thread, error) {
 }
 
 func (t *Thread) Create(title, workspaceId string) (thread.Thread, error) {
+	db, err := t.app.DB()
+	if err != nil {
+		return thread.Thread{}, err
+	}
+
 	title = strings.TrimSpace(title)
 	if title == "" {
 		return thread.Thread{}, errors.New("thread title cannot be empty")
@@ -46,7 +61,7 @@ func (t *Thread) Create(title, workspaceId string) (thread.Thread, error) {
 
 	id := ksuid.New().String()
 
-	record, err := t.app.DB.Threads.CreateThread(
+	record, err := db.Threads.CreateThread(
 		t.app.Context(),
 		thread.CreateThreadParams{
 			ID:        id,
@@ -60,12 +75,17 @@ func (t *Thread) Create(title, workspaceId string) (thread.Thread, error) {
 }
 
 func (t *Thread) Rename(id, title string) (thread.Thread, error) {
+	db, err := t.app.DB()
+	if err != nil {
+		return thread.Thread{}, err
+	}
+
 	title = strings.TrimSpace(title)
 	if title == "" {
 		return thread.Thread{}, errors.New("thread title cannot be empty")
 	}
 
-	record, err := t.app.DB.Threads.UpdateThread(
+	record, err := db.Threads.UpdateThread(
 		t.app.Context(),
 		thread.UpdateThreadParams{
 			ID:    id,
@@ -77,5 +97,10 @@ func (t *Thread) Rename(id, title string) (thread.Thread, error) {
 }
 
 func (t *Thread) Delete(id string) error {
-	return t.app.DB.Threads.DeleteThread(t.app.Context(), id)
+	db, err := t.app.DB()
+	if err != nil {
+		return err
+	}
+
+	return db.Threads.DeleteThread(t.app.Context(), id)
 }

@@ -28,7 +28,12 @@ func NewDocument(app *app.App) *Document {
 }
 
 func (d *Document) List(workspaceId string) ([]document.ListDocumentsRow, error) {
-	records, err := d.app.DB.Documents.ListDocuments(
+	db, err := d.app.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	records, err := db.Documents.ListDocuments(
 		d.app.Context(),
 		workspaceId,
 	)
@@ -40,7 +45,13 @@ func (d *Document) List(workspaceId string) ([]document.ListDocumentsRow, error)
 }
 
 func (d *Document) Get(id string) (document.GetDocumentRow, error) {
-	record, err := d.app.DB.Documents.GetDocument(d.app.Context(), id)
+	db, err := d.app.DB()
+	if err != nil {
+		return document.GetDocumentRow{}, err
+	}
+
+	record, err := db.Documents.GetDocument(d.app.Context(), id)
+
 	return record, err
 }
 
@@ -84,6 +95,26 @@ func (d *Document) Choose(extensions []string) (string, error) {
 }
 
 func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, error) {
+	llm, err := d.app.LLM()
+	if err != nil {
+		return document.CreateDocumentRow{}, nil
+	}
+
+	vdb, err := d.app.VDB()
+	if err != nil {
+		return document.CreateDocumentRow{}, nil
+	}
+
+	db, err := d.app.DB()
+	if err != nil {
+		return document.CreateDocumentRow{}, nil
+	}
+
+	prefs, err := d.app.Prefs()
+	if err != nil {
+		return document.CreateDocumentRow{}, nil
+	}
+
 	docId := ksuid.New().String()
 	extension := strings.TrimPrefix(filepath.Ext(path), ".")
 	title := strings.TrimSuffix(filepath.Base(path), "."+extension)
@@ -101,9 +132,9 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 
 	// TODO: we may need to break down the plain text into multiple chunks
 	// and separately generate embeddings for each.
-	embedding, err := d.app.LLM.Embedding(
+	embedding, err := llm.Embedding(
 		d.app.Context(),
-		"embeddinggemma:latest",
+		prefs.Models.EmbedModel,
 		plainText,
 		vectordb.VectorDimensions,
 	)
@@ -112,7 +143,7 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		return document.CreateDocumentRow{}, err
 	}
 
-	d.app.VectorDB.Add(
+	vdb.Add(
 		d.app.Context(),
 		vectordb.Document{
 			ID:          ksuid.New().String(),
@@ -133,7 +164,7 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		Created:   time.Now().UTC().Format(time.RFC3339),
 	}
 
-	record, err := d.app.DB.Documents.CreateDocument(
+	record, err := db.Documents.CreateDocument(
 		d.app.Context(),
 		createParams,
 	)
@@ -142,7 +173,12 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 }
 
 func (d *Document) Delete(id string) error {
-	return d.app.DB.Documents.DeleteDocument(d.app.Context(), id)
+	db, err := d.app.DB()
+	if err != nil {
+		return err
+	}
+
+	return db.Documents.DeleteDocument(d.app.Context(), id)
 }
 
 func (d *Document) extractTextFromContent(content []byte, contentType string) (string, error) {

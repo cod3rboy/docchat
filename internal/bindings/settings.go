@@ -29,21 +29,31 @@ func NewSettings(app *app.App) *Settings {
 func (s *Settings) GetModelSettings() (ModelSettings, error) {
 	settings := ModelSettings{}
 
-	settings.APIEndpoint = s.app.Prefs.Models.OpenAICompatAPIURL
-	settings.APIKey = s.app.Prefs.Models.APIKey
-	settings.PrimaryModel = s.app.Prefs.Models.PrimaryModel
-	settings.EmbeddingModel = s.app.Prefs.Models.EmbedModel
+	prefs, err := s.app.Prefs()
+	if err != nil {
+		return settings, err
+	}
+
+	settings.APIEndpoint = prefs.Models.OpenAICompatAPIURL
+	settings.APIKey = prefs.Models.APIKey
+	settings.PrimaryModel = prefs.Models.PrimaryModel
+	settings.EmbeddingModel = prefs.Models.EmbedModel
 
 	return settings, nil
 }
 
 func (s *Settings) SaveModelSettings(settings ModelSettings) error {
-	s.app.Prefs.Models.OpenAICompatAPIURL = settings.APIEndpoint
-	s.app.Prefs.Models.APIKey = settings.APIKey
-	s.app.Prefs.Models.PrimaryModel = settings.PrimaryModel
-	s.app.Prefs.Models.EmbedModel = settings.EmbeddingModel
+	prefs, err := s.app.Prefs()
+	if err != nil {
+		return err
+	}
 
-	return s.app.Prefs.Save()
+	prefs.Models.OpenAICompatAPIURL = settings.APIEndpoint
+	prefs.Models.APIKey = settings.APIKey
+	prefs.Models.PrimaryModel = settings.PrimaryModel
+	prefs.Models.EmbedModel = settings.EmbeddingModel
+
+	return prefs.Save()
 }
 
 func (s *Settings) ListModels(apiEndpoint, apiKey string) ([]string, error) {

@@ -47,18 +47,38 @@ func (a *Assistant) StreamReply(
 	conversation []ai.Message,
 	replyEventName string,
 ) (string, error) {
-	recentQuery := conversation[len(conversation)-1]
-	recentQueryMessage := recentQuery.Content
-
-	// replyEventName holds the thread id
-	thread, err := a.app.DB.Threads.GetThread(a.app.Context(), replyEventName)
+	llm, err := a.app.LLM()
 	if err != nil {
 		return "", err
 	}
 
-	embedding, err := a.app.LLM.Embedding(
+	db, err := a.app.DB()
+	if err != nil {
+		return "", err
+	}
+
+	vdb, err := a.app.VDB()
+	if err != nil {
+		return "", err
+	}
+
+	prefs, err := a.app.Prefs()
+	if err != nil {
+		return "", err
+	}
+
+	recentQuery := conversation[len(conversation)-1]
+	recentQueryMessage := recentQuery.Content
+
+	// replyEventName holds the thread id
+	thread, err := db.Threads.GetThread(a.app.Context(), replyEventName)
+	if err != nil {
+		return "", err
+	}
+
+	embedding, err := llm.Embedding(
 		a.app.Context(),
-		"embeddinggemma:latest",
+		prefs.Models.EmbedModel,
 		recentQueryMessage,
 		vectordb.VectorDimensions,
 	)
@@ -66,7 +86,7 @@ func (a *Assistant) StreamReply(
 		return "", err
 	}
 
-	docs, _ := a.app.VectorDB.SearchByWorkspace(
+	docs, _ := vdb.SearchByWorkspace(
 		a.app.Context(),
 		embedding.Vector,
 		thread.Workspace,
@@ -88,9 +108,9 @@ func (a *Assistant) StreamReply(
 	finalConversation[0] = systemMessage
 	copy(finalConversation[1:], conversation)
 
-	chunks, errs := a.app.LLM.Stream(
+	chunks, errs := llm.Stream(
 		a.app.Context(),
-		"gemma4:e2b",
+		prefs.Models.PrimaryModel,
 		finalConversation,
 	)
 
