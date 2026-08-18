@@ -123,7 +123,7 @@ export function LLMModelSettings({
             }
           >
             <Select.Trigger placeholder="Choose model" />
-            <Select.Content>
+            <Select.Content position="popper" style={{ maxHeight: "20rem" }}>
               {!hasFreeModels || !excludePaidModels
                 ? models.primary.map((model) => (
                     <Select.Item key={model} value={model}>
@@ -149,7 +149,7 @@ export function LLMModelSettings({
             }
           >
             <Select.Trigger placeholder="Choose model" />
-            <Select.Content>
+            <Select.Content position="popper" style={{ maxHeight: "20rem" }}>
               {!hasFreeModels || !excludePaidModels
                 ? models.embedding.map((model) => (
                     <Select.Item key={model} value={model}>
