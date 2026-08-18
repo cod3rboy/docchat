@@ -1,5 +1,15 @@
-import { Box, Flex, Grid, Select, Text, TextField } from "@radix-ui/themes";
+import { useState } from "react";
+import {
+  Box,
+  Flex,
+  Grid,
+  IconButton,
+  Select,
+  Text,
+  TextField,
+} from "@radix-ui/themes";
 import { bindings } from "../../wailsjs/go/models";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 
 export type ModelSettings = bindings.ModelSettings;
 
@@ -19,6 +29,8 @@ export function LLMModelSettings({
   models,
   onUpdate,
 }: LLModelSettingsProps) {
+  const [revealKey, setRevealKey] = useState<boolean>(false);
+
   return (
     <Box>
       <Box mt="4">
@@ -45,13 +57,27 @@ export function LLMModelSettings({
           </Text>
         </Text>
         <TextField.Root
+          type={revealKey ? "text" : "password"}
           mt="1"
           placeholder="your-api-key-here"
           value={settings.apiKey}
           onChange={(e) =>
             onUpdate({ ...settings, apiKey: e.currentTarget.value })
           }
-        />
+        >
+          <TextField.Slot side="right">
+            <IconButton
+              variant="ghost"
+              onClick={() => setRevealKey((reveal) => !reveal)}
+            >
+              {revealKey ? (
+                <EyeOpenIcon height="16" width="16" />
+              ) : (
+                <EyeClosedIcon height="16" width="16" />
+              )}
+            </IconButton>
+          </TextField.Slot>
+        </TextField.Root>
       </Box>
       <Grid mt="4" columns="1fr 1fr" gap="2">
         <Flex direction="column">
