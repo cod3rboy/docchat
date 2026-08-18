@@ -53,7 +53,13 @@ func (s *Settings) SaveModelSettings(settings ModelSettings) error {
 	prefs.Models.PrimaryModel = settings.PrimaryModel
 	prefs.Models.EmbedModel = settings.EmbeddingModel
 
-	return prefs.Save()
+	if err := prefs.Save(); err != nil {
+		return err
+	}
+
+	s.app.ResetLLM()
+
+	return nil
 }
 
 func (s *Settings) ListModels(apiEndpoint, apiKey string) ([]string, error) {
