@@ -136,7 +136,6 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		d.app.Context(),
 		prefs.Models.EmbedModel,
 		plainText,
-		vectordb.VectorDimensions,
 	)
 	if err != nil {
 		err = errors.Join(errors.New("failed to generate embeddings"), err)

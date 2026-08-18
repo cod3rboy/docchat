@@ -118,14 +118,12 @@ func (p *llmProvider) Embedding(
 	ctx context.Context,
 	embeddingModel string,
 	content string,
-	dimensions int,
 ) (Embedding, error) {
 	res, err := p.provider.Embedding(
 		ctx,
 		anyllm.EmbeddingParams{
-			Model:      embeddingModel,
-			Input:      content,
-			Dimensions: &dimensions,
+			Model: embeddingModel,
+			Input: content,
 		},
 	)
 

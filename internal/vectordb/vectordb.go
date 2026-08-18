@@ -2,10 +2,6 @@ package vectordb
 
 import "context"
 
-const (
-	VectorDimensions = 512
-)
-
 type Document struct {
 	ID          string
 	GroupID     string

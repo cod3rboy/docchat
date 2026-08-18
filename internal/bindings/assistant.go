@@ -6,7 +6,6 @@ import (
 
 	"github.com/cod3rboy/docchat/internal/ai"
 	"github.com/cod3rboy/docchat/internal/app"
-	"github.com/cod3rboy/docchat/internal/vectordb"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -80,7 +79,6 @@ func (a *Assistant) StreamReply(
 		a.app.Context(),
 		prefs.Models.EmbedModel,
 		recentQueryMessage,
-		vectordb.VectorDimensions,
 	)
 	if err != nil {
 		return "", err
