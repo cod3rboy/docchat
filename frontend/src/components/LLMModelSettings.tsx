@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import {
   Box,
+  Checkbox,
   Flex,
   Grid,
   IconButton,
@@ -30,6 +31,24 @@ export function LLMModelSettings({
   onUpdate,
 }: LLModelSettingsProps) {
   const [revealKey, setRevealKey] = useState<boolean>(false);
+  const [excludePaidModels, setExcludePaidModels] = useState<boolean>(true);
+
+  const toggleExcludePaidModels = useCallback(
+    () => setExcludePaidModels((exclude: boolean) => !exclude),
+    [],
+  );
+
+  const freePrimaryModels = useMemo(
+    () => models.primary.filter((model) => model.endsWith(":free")),
+    [models],
+  );
+  const freeEmbeddingModels = useMemo(
+    () => models.embedding.filter((model) => model.endsWith(":free")),
+    [models],
+  );
+
+  const hasFreeModels =
+    freePrimaryModels.length > 0 || freeEmbeddingModels.length > 0;
 
   return (
     <Box>
@@ -79,6 +98,19 @@ export function LLMModelSettings({
           </TextField.Slot>
         </TextField.Root>
       </Box>
+      {hasFreeModels && (
+        <Box mt="4">
+          <Text as="label" size="2">
+            <Flex gap="2" align="center">
+              <Checkbox
+                checked={excludePaidModels}
+                onCheckedChange={toggleExcludePaidModels}
+              />
+              Exclude paid models
+            </Flex>
+          </Text>
+        </Box>
+      )}
       <Grid mt="4" columns="1fr 1fr" gap="2">
         <Flex direction="column">
           <Text mb="1" as="label" weight="medium" size="2">
@@ -92,11 +124,17 @@ export function LLMModelSettings({
           >
             <Select.Trigger placeholder="Choose model" />
             <Select.Content>
-              {models.primary.map((model) => (
-                <Select.Item key={model} value={model}>
-                  {model}
-                </Select.Item>
-              ))}
+              {!hasFreeModels || !excludePaidModels
+                ? models.primary.map((model) => (
+                    <Select.Item key={model} value={model}>
+                      {model}
+                    </Select.Item>
+                  ))
+                : freePrimaryModels.map((model) => (
+                    <Select.Item key={model} value={model}>
+                      {model}
+                    </Select.Item>
+                  ))}
             </Select.Content>
           </Select.Root>
         </Flex>
@@ -112,11 +150,17 @@ export function LLMModelSettings({
           >
             <Select.Trigger placeholder="Choose model" />
             <Select.Content>
-              {models.embedding.map((model) => (
-                <Select.Item key={model} value={model}>
-                  {model}
-                </Select.Item>
-              ))}
+              {!hasFreeModels || !excludePaidModels
+                ? models.embedding.map((model) => (
+                    <Select.Item key={model} value={model}>
+                      {model}
+                    </Select.Item>
+                  ))
+                : freeEmbeddingModels.map((model) => (
+                    <Select.Item key={model} value={model}>
+                      {model}
+                    </Select.Item>
+                  ))}
             </Select.Content>
           </Select.Root>
         </Flex>
