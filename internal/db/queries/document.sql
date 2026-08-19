@@ -30,5 +30,8 @@ SET title = ?, extension = ?, indexed = ?,  content = ?, plaintext = ?
 WHERE id = ?
 RETURNING id, title, extension, embedid, indexed, workspace, created;
 
+-- name: MarkDocumentAsIndexed :exec
+UPDATE documents SET indexed = TRUE WHERE id = ?;
+
 -- name: DeleteDocument :exec
 DELETE FROM documents WHERE id = ?;

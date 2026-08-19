@@ -16,6 +16,7 @@ type Querier interface {
 	GetDocumentIDsToIndex(ctx context.Context) ([]string, error)
 	GetDocumentPlainText(ctx context.Context, id string) (string, error)
 	ListDocuments(ctx context.Context, workspace string) ([]ListDocumentsRow, error)
+	MarkDocumentAsIndexed(ctx context.Context, id string) error
 	UpdateDocument(ctx context.Context, arg UpdateDocumentParams) (UpdateDocumentRow, error)
 }
 
