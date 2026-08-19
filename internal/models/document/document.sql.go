@@ -11,9 +11,9 @@ import (
 
 const createDocument = `-- name: CreateDocument :one
 INSERT INTO documents (
-    id, title, extension, embedid, content, workspace, created
+    id, title, extension, embedid, content, plaintext, workspace, created
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?
 ) RETURNING id, title, extension, embedid, indexed, workspace, created
 `
 
@@ -23,6 +23,7 @@ type CreateDocumentParams struct {
 	Extension string
 	Embedid   string
 	Content   []byte
+	Plaintext string
 	Workspace string
 	Created   string
 }
@@ -44,6 +45,7 @@ func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) 
 		arg.Extension,
 		arg.Embedid,
 		arg.Content,
+		arg.Plaintext,
 		arg.Workspace,
 		arg.Created,
 	)
@@ -138,6 +140,17 @@ func (q *Queries) GetDocumentIDsToIndex(ctx context.Context) ([]string, error) {
 	return items, nil
 }
 
+const getDocumentPlainText = `-- name: GetDocumentPlainText :one
+SELECT plaintext FROM documents WHERE id = ? LIMIT 1
+`
+
+func (q *Queries) GetDocumentPlainText(ctx context.Context, id string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getDocumentPlainText, id)
+	var plaintext string
+	err := row.Scan(&plaintext)
+	return plaintext, err
+}
+
 const listDocuments = `-- name: ListDocuments :many
 SELECT id, title, extension, embedid, indexed, workspace, created
 FROM documents WHERE workspace = ?
@@ -187,7 +200,7 @@ func (q *Queries) ListDocuments(ctx context.Context, workspace string) ([]ListDo
 
 const updateDocument = `-- name: UpdateDocument :one
 UPDATE documents
-SET title = ?, extension = ?, indexed = ?,  content = ?
+SET title = ?, extension = ?, indexed = ?,  content = ?, plaintext = ?
 WHERE id = ?
 RETURNING id, title, extension, embedid, indexed, workspace, created
 `
@@ -197,6 +210,7 @@ type UpdateDocumentParams struct {
 	Extension string
 	Indexed   bool
 	Content   []byte
+	Plaintext string
 	ID        string
 }
 
@@ -216,6 +230,7 @@ func (q *Queries) UpdateDocument(ctx context.Context, arg UpdateDocumentParams) 
 		arg.Extension,
 		arg.Indexed,
 		arg.Content,
+		arg.Plaintext,
 		arg.ID,
 	)
 	var i UpdateDocumentRow

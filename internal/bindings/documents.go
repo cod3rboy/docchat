@@ -161,6 +161,7 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		Title:     title,
 		Extension: extension,
 		Content:   content,
+		Plaintext: plainText,
 		Embedid:   embedId,
 		Workspace: workspaceId,
 		Created:   time.Now().UTC().Format(time.RFC3339),
