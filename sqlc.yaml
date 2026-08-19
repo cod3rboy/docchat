@@ -8,6 +8,7 @@ sql:
         package: "workspace"
         out: "internal/models/workspace"
         emit_interface: true
+        omit_unused_structs: true
 
   - engine: "sqlite"
     queries: "internal/db/queries/document.sql"
@@ -17,6 +18,7 @@ sql:
         package: "document"
         out: "internal/models/document"
         emit_interface: true
+        omit_unused_structs: true
 
   - engine: "sqlite"
     queries: "internal/db/queries/thread.sql"
@@ -26,6 +28,7 @@ sql:
         package: "thread"
         out: "internal/models/thread"
         emit_interface: true
+        omit_unused_structs: true
 
   - engine: "sqlite"
     queries: "internal/db/queries/message.sql"
@@ -35,3 +38,4 @@ sql:
         package: "message"
         out: "internal/models/message"
         emit_interface: true
+        omit_unused_structs: true

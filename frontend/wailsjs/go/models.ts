@@ -46,6 +46,8 @@ export namespace document {
 	    ID: string;
 	    Title: string;
 	    Extension: string;
+	    Embedid: string;
+	    Indexed: boolean;
 	    Workspace: string;
 	    Created: string;
 	
@@ -58,6 +60,8 @@ export namespace document {
 	        this.ID = source["ID"];
 	        this.Title = source["Title"];
 	        this.Extension = source["Extension"];
+	        this.Embedid = source["Embedid"];
+	        this.Indexed = source["Indexed"];
 	        this.Workspace = source["Workspace"];
 	        this.Created = source["Created"];
 	    }
@@ -66,6 +70,8 @@ export namespace document {
 	    ID: string;
 	    Title: string;
 	    Extension: string;
+	    Embedid: string;
+	    Indexed: boolean;
 	    Workspace: string;
 	    Created: string;
 	
@@ -78,6 +84,8 @@ export namespace document {
 	        this.ID = source["ID"];
 	        this.Title = source["Title"];
 	        this.Extension = source["Extension"];
+	        this.Embedid = source["Embedid"];
+	        this.Indexed = source["Indexed"];
 	        this.Workspace = source["Workspace"];
 	        this.Created = source["Created"];
 	    }
@@ -86,6 +94,8 @@ export namespace document {
 	    ID: string;
 	    Title: string;
 	    Extension: string;
+	    Embedid: string;
+	    Indexed: boolean;
 	    Workspace: string;
 	    Created: string;
 	
@@ -98,6 +108,8 @@ export namespace document {
 	        this.ID = source["ID"];
 	        this.Title = source["Title"];
 	        this.Extension = source["Extension"];
+	        this.Embedid = source["Embedid"];
+	        this.Indexed = source["Indexed"];
 	        this.Workspace = source["Workspace"];
 	        this.Created = source["Created"];
 	    }

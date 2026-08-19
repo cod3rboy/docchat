@@ -142,10 +142,12 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		return document.CreateDocumentRow{}, err
 	}
 
+	embedId := ksuid.New().String()
+
 	vdb.Add(
 		d.app.Context(),
 		vectordb.Document{
-			ID:          ksuid.New().String(),
+			ID:          embedId,
 			GroupID:     docId,
 			WorkspaceID: workspaceId,
 			Vector:      embedding.Vector,
@@ -159,6 +161,7 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		Title:     title,
 		Extension: extension,
 		Content:   content,
+		Embedid:   embedId,
 		Workspace: workspaceId,
 		Created:   time.Now().UTC().Format(time.RFC3339),
 	}

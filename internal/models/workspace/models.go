@@ -4,30 +4,6 @@
 
 package workspace
 
-type Document struct {
-	ID        string
-	Title     string
-	Extension string
-	Content   []byte
-	Workspace string
-	Created   string
-}
-
-type Message struct {
-	ID      string
-	Role    string
-	Content string
-	Thread  string
-	Created string
-}
-
-type Thread struct {
-	ID        string
-	Title     string
-	Workspace string
-	Created   string
-}
-
 type Workspace struct {
 	ID        string
 	Name      string

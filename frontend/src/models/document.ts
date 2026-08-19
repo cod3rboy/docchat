@@ -8,6 +8,8 @@ export class Document {
   public readonly id: string;
   public readonly title: string;
   public readonly extension: string;
+  public readonly embedId: string;
+  public readonly indexed: boolean;
   public readonly workspaceId: string;
   public readonly created: Date;
 
@@ -15,6 +17,8 @@ export class Document {
     this.id = record.ID;
     this.title = record.Title;
     this.extension = record.Extension;
+    this.embedId = record.Embedid;
+    this.indexed = record.Indexed;
     this.workspaceId = record.Workspace;
     this.created = new Date(record.Created);
   }
