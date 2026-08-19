@@ -25,6 +25,13 @@ func bootstrap(app *App) error {
 		return errors.Join(errors.New("database migration failed"), err)
 	}
 
+	// run startup hooks
+	for _, hook := range app.startupHooks {
+		if err = hook(app); err != nil {
+			return errors.Join(errors.New("startup hook error"), err)
+		}
+	}
+
 	return nil
 }
 

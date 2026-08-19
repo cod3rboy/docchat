@@ -19,6 +19,8 @@ const (
 	DBFileName = "docchat.db"
 )
 
+type StartupHook func(app *App) error
+
 // App struct
 type App struct {
 	dir   string
@@ -27,6 +29,8 @@ type App struct {
 	prefs *prefs.Preferences
 	llm   ai.LLM
 	vdb   vectordb.VectorDB
+
+	startupHooks []StartupHook
 }
 
 // startup is called when the app starts. The context is saved
@@ -45,6 +49,10 @@ func (app *App) Startup(ctx context.Context) {
 		})
 		os.Exit(1)
 	}
+}
+
+func (app *App) AddStartupHook(hook StartupHook) {
+	app.startupHooks = append(app.startupHooks, hook)
 }
 
 func (app *App) Context() context.Context {
