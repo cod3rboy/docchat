@@ -21,3 +21,7 @@ export function Get(arg1) {
 export function List(arg1) {
   return window['go']['bindings']['Document']['List'](arg1);
 }
+
+export function RefreshIndex() {
+  return window['go']['bindings']['Document']['RefreshIndex']();
+}

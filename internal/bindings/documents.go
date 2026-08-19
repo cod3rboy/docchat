@@ -154,6 +154,10 @@ func (d *Document) Delete(id string) error {
 	return db.Documents.DeleteDocument(d.app.Context(), id)
 }
 
+func (d *Document) RefreshIndex() error {
+	return d.embdr.Index()
+}
+
 func (d *Document) extractTextFromContent(content []byte, contentType string) (string, error) {
 	var textReader text.TextReader
 	switch contentType {

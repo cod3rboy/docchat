@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { FilePlusIcon } from "@radix-ui/react-icons";
+import {
+  CheckCircledIcon,
+  FilePlusIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons";
 import {
   Flex,
   Grid,
   Heading,
   IconButton,
   ScrollArea,
+  Spinner,
   Text,
   Tooltip,
 } from "@radix-ui/themes";
@@ -16,6 +21,7 @@ import {
 } from "../../wailsjs/go/bindings/Document";
 import { Document } from "../models/document";
 import { useWorkspace } from "../hooks/useWorkspace";
+import { IndexerState, useDocIndexer } from "../hooks/useDocIndexer";
 
 interface KnowledgePanelProps {
   workspaceId: string;
@@ -24,6 +30,7 @@ interface KnowledgePanelProps {
 export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
   const [documents, setDocuments] = useState<Document[]>([]);
   const { workspace } = useWorkspace();
+  const { state: indexerState, refresh: refreshIndex } = useDocIndexer();
 
   const loadDocuments = async () => {
     const docList = (await listDocuments(workspaceId)) ?? [];
@@ -52,9 +59,28 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
           borderBottom: "1px solid var(--gray-6)",
         }}
       >
-        <Heading color="gray" size="2">
-          Knowledge
-        </Heading>
+        <Flex align="center" gap="1">
+          <Heading color="gray" size="2">
+            Knowledge
+          </Heading>
+          {indexerState === IndexerState.Started && (
+            <Tooltip content="Indexing">
+              <Spinner />
+            </Tooltip>
+          )}
+          {indexerState === IndexerState.Idle && (
+            <Tooltip content="Indexed">
+              <CheckCircledIcon color="green" />
+            </Tooltip>
+          )}
+          {indexerState === IndexerState.Errored && (
+            <Tooltip content="Indexing failed! Click to retry">
+              <IconButton variant="ghost" onClick={refreshIndex}>
+                <ReloadIcon color="red" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Flex>
         <KnowledgeFileDialog onAdd={_addDocument}>
           <IconButton variant="ghost">
             <FilePlusIcon />

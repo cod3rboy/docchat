@@ -11,3 +11,5 @@ export function Delete(arg1:string):Promise<void>;
 export function Get(arg1:string):Promise<document.GetDocumentRow>;
 
 export function List(arg1:string):Promise<Array<document.ListDocumentsRow>>;
+
+export function RefreshIndex():Promise<void>;
