@@ -6,6 +6,7 @@ import (
 
 	"github.com/cod3rboy/docchat/internal/app"
 	"github.com/cod3rboy/docchat/internal/bindings"
+	"github.com/cod3rboy/docchat/internal/embedder"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -19,9 +20,13 @@ func main() {
 	app := &app.App{}
 
 	opts := defaultOptions()
+
+	embdr := embedder.NewEmbedder()
+	app.AddStartupHook(embdr.Start)
+
 	opts.Bind = []any{
 		bindings.NewWorkspace(app),
-		bindings.NewDocument(app),
+		bindings.NewDocument(app, embdr),
 		bindings.NewThread(app),
 		bindings.NewMessage(app),
 		bindings.NewAssistant(app),

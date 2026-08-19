@@ -10,20 +10,22 @@ import (
 	"time"
 
 	"github.com/cod3rboy/docchat/internal/app"
+	"github.com/cod3rboy/docchat/internal/embedder"
 	"github.com/cod3rboy/docchat/internal/models/document"
 	"github.com/cod3rboy/docchat/internal/text"
-	"github.com/cod3rboy/docchat/internal/vectordb"
 	"github.com/segmentio/ksuid"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type Document struct {
-	app *app.App
+	app   *app.App
+	embdr *embedder.Embedder
 }
 
-func NewDocument(app *app.App) *Document {
+func NewDocument(application *app.App, embdr *embedder.Embedder) *Document {
 	return &Document{
-		app: app,
+		app:   application,
+		embdr: embdr,
 	}
 }
 
@@ -95,27 +97,14 @@ func (d *Document) Choose(extensions []string) (string, error) {
 }
 
 func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, error) {
-	llm, err := d.app.LLM()
-	if err != nil {
-		return document.CreateDocumentRow{}, nil
-	}
-
-	vdb, err := d.app.VDB()
-	if err != nil {
-		return document.CreateDocumentRow{}, nil
-	}
-
 	db, err := d.app.DB()
 	if err != nil {
 		return document.CreateDocumentRow{}, nil
 	}
 
-	prefs, err := d.app.Prefs()
-	if err != nil {
-		return document.CreateDocumentRow{}, nil
-	}
-
 	docId := ksuid.New().String()
+	embedId := ksuid.New().String()
+
 	extension := strings.TrimPrefix(filepath.Ext(path), ".")
 	title := strings.TrimSuffix(filepath.Base(path), "."+extension)
 
@@ -129,32 +118,6 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		err = errors.Join(errors.New("failed to extract plain text"), err)
 		return document.CreateDocumentRow{}, err
 	}
-
-	// TODO: we may need to break down the plain text into multiple chunks
-	// and separately generate embeddings for each.
-	embedding, err := llm.Embedding(
-		d.app.Context(),
-		prefs.Models.EmbedModel,
-		plainText,
-	)
-	if err != nil {
-		err = errors.Join(errors.New("failed to generate embeddings"), err)
-		return document.CreateDocumentRow{}, err
-	}
-
-	embedId := ksuid.New().String()
-
-	vdb.Add(
-		d.app.Context(),
-		vectordb.Document{
-			ID:          embedId,
-			GroupID:     docId,
-			WorkspaceID: workspaceId,
-			Vector:      embedding.Vector,
-			Content:     embedding.Content,
-			Index:       embedding.Index,
-		},
-	)
 
 	createParams := document.CreateDocumentParams{
 		ID:        docId,
@@ -171,8 +134,13 @@ func (d *Document) Add(path, workspaceId string) (document.CreateDocumentRow, er
 		d.app.Context(),
 		createParams,
 	)
+	if err != nil {
+		return document.CreateDocumentRow{}, err
+	}
 
-	return record, err
+	d.embdr.Index()
+
+	return record, nil
 }
 
 func (d *Document) Delete(id string) error {
@@ -180,6 +148,8 @@ func (d *Document) Delete(id string) error {
 	if err != nil {
 		return err
 	}
+
+	// TODO: also delete its vector embeddings
 
 	return db.Documents.DeleteDocument(d.app.Context(), id)
 }
