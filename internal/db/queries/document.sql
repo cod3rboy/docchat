@@ -11,6 +11,9 @@ ORDER BY created DESC;
 -- name: GetDocumentContent :one
 SELECT content FROM documents WHERE id = ? LIMIT 1;
 
+-- name: GetDocumentIDsToIndex :many
+SELECT id FROM documents WHERE indexed = FALSE;
+
 -- name: CreateDocument :one
 INSERT INTO documents (
     id, title, extension, embedid, content, workspace, created

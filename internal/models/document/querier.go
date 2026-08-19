@@ -13,6 +13,7 @@ type Querier interface {
 	DeleteDocument(ctx context.Context, id string) error
 	GetDocument(ctx context.Context, id string) (GetDocumentRow, error)
 	GetDocumentContent(ctx context.Context, id string) ([]byte, error)
+	GetDocumentIDsToIndex(ctx context.Context) ([]string, error)
 	ListDocuments(ctx context.Context, workspace string) ([]ListDocumentsRow, error)
 	UpdateDocument(ctx context.Context, arg UpdateDocumentParams) (UpdateDocumentRow, error)
 }

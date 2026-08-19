@@ -111,6 +111,33 @@ func (q *Queries) GetDocumentContent(ctx context.Context, id string) ([]byte, er
 	return content, err
 }
 
+const getDocumentIDsToIndex = `-- name: GetDocumentIDsToIndex :many
+SELECT id FROM documents WHERE indexed = FALSE
+`
+
+func (q *Queries) GetDocumentIDsToIndex(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getDocumentIDsToIndex)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listDocuments = `-- name: ListDocuments :many
 SELECT id, title, extension, embedid, indexed, workspace, created
 FROM documents WHERE workspace = ?
