@@ -158,6 +158,10 @@ func (d *Document) RefreshIndex() error {
 	return d.embdr.Index()
 }
 
+func (d *Document) EmbedderState() string {
+	return d.embdr.State()
+}
+
 func (d *Document) extractTextFromContent(content []byte, contentType string) (string, error) {
 	var textReader text.TextReader
 	switch contentType {

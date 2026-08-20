@@ -14,6 +14,10 @@ export function Delete(arg1) {
   return window['go']['bindings']['Document']['Delete'](arg1);
 }
 
+export function EmbedderState() {
+  return window['go']['bindings']['Document']['EmbedderState']();
+}
+
 export function Get(arg1) {
   return window['go']['bindings']['Document']['Get'](arg1);
 }

@@ -8,6 +8,8 @@ export function Choose(arg1:Array<string>):Promise<string>;
 
 export function Delete(arg1:string):Promise<void>;
 
+export function EmbedderState():Promise<string>;
+
 export function Get(arg1:string):Promise<document.GetDocumentRow>;
 
 export function List(arg1:string):Promise<Array<document.ListDocumentsRow>>;

@@ -8,18 +8,19 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-type Event string
+type State string
 
 const (
 	indexSignalQueueSize = 10
 
-	EmbedderStarted Event = "EMBEDDER_STARTED"
-	EmbedderIdle    Event = "EMBEDDER_IDLE"
-	EmbedderErrored Event = "EMBEDDER_ERRORED"
+	EmbedderStarted State = "EMBEDDER_STARTED"
+	EmbedderIdle    State = "EMBEDDER_IDLE"
+	EmbedderErrored State = "EMBEDDER_ERRORED"
 )
 
 type Embedder struct {
 	idxSignal chan struct{}
+	state     State
 }
 
 func NewEmbedder() *Embedder {
@@ -47,6 +48,10 @@ func (e *Embedder) Index() error {
 	return nil
 }
 
+func (e *Embedder) State() string {
+	return string(e.state)
+}
+
 func (e *Embedder) run(app *app.App) {
 	defer func() {
 		close(e.idxSignal)
@@ -54,15 +59,16 @@ func (e *Embedder) run(app *app.App) {
 	}()
 
 	for {
-		nextEvent := EmbedderStarted
-		runtime.EventsEmit(app.Context(), string(nextEvent))
+		e.state = EmbedderStarted
+		runtime.EventsEmit(app.Context(), e.State())
 
-		nextEvent = EmbedderIdle
+		nextState := EmbedderIdle
 		if err := e.startIndexing(app); err != nil {
-			nextEvent = EmbedderErrored
+			nextState = EmbedderErrored
 		}
 
-		runtime.EventsEmit(app.Context(), string(nextEvent))
+		e.state = nextState
+		runtime.EventsEmit(app.Context(), e.State())
 		select {
 		case <-e.idxSignal:
 		case <-app.Context().Done():
@@ -77,22 +83,27 @@ func (e *Embedder) startIndexing(app *app.App) error {
 		return err
 	}
 
-	llm, err := app.LLM()
-	if err != nil {
-		return err
-	}
-
-	vdb, err := app.VDB()
-	if err != nil {
-		return err
-	}
-
 	prefs, err := app.Prefs()
 	if err != nil {
 		return err
 	}
 
 	docIdsForIndexing, err := db.Documents.GetDocumentIDsToIndex(app.Context())
+	if err != nil {
+		return err
+	}
+
+	if len(docIdsForIndexing) == 0 {
+		// no document to index
+		return nil
+	}
+
+	llm, err := app.LLM()
+	if err != nil {
+		return err
+	}
+
+	vdb, err := app.VDB()
 	if err != nil {
 		return err
 	}

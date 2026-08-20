@@ -1,6 +1,9 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { EventsOn, EventsOff } from "../../wailsjs/runtime/runtime";
-import { RefreshIndex } from "../../wailsjs/go/bindings/Document";
+import {
+  RefreshIndex,
+  EmbedderState,
+} from "../../wailsjs/go/bindings/Document";
 
 const EVENT_EMBEDDER_STARTED = "EMBEDDER_STARTED";
 const EVENT_EMBEDDER_IDLE = "EMBEDDER_IDLE";
@@ -22,7 +25,22 @@ export function useDocIndexer(): UseDocIndexerHookResult {
     IndexerState.Idle,
   );
 
+  const getInitialIndexerState = useCallback(async () => {
+    const state = await EmbedderState();
+    if (state === EVENT_EMBEDDER_STARTED) {
+      setIndexerState(IndexerState.Started);
+    }
+    if (state === EVENT_EMBEDDER_IDLE) {
+      setIndexerState(IndexerState.Idle);
+    }
+    if (state === EVENT_EMBEDDER_ERRORED) {
+      setIndexerState(IndexerState.Errored);
+    }
+  }, []);
+
   useEffect(() => {
+    getInitialIndexerState();
+
     EventsOn(EVENT_EMBEDDER_STARTED, () =>
       setIndexerState(IndexerState.Started),
     );
