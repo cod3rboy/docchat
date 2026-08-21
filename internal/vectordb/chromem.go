@@ -18,8 +18,7 @@ const (
 )
 
 type chromemVectorDB struct {
-	db         *chromem.DB
-	collection *chromem.Collection
+	db *chromem.DB
 }
 
 func NewChromemVectorDB(appDir string) (VectorDB, error) {
@@ -28,48 +27,92 @@ func NewChromemVectorDB(appDir string) (VectorDB, error) {
 		return nil, err
 	}
 
-	collection, err := db.GetOrCreateCollection(CollectionName, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
 	vdb := &chromemVectorDB{
-
-		db:         db,
-		collection: collection,
+		db: db,
 	}
 
 	return vdb, nil
 }
 
-func (c *chromemVectorDB) Add(ctx context.Context, doc Document) error {
+func (c *chromemVectorDB) Add(
+	ctx context.Context,
+	workspaceId string,
+	doc Document,
+) error {
+	collection, err := c.db.GetOrCreateCollection(workspaceId, nil, nil)
+	if err != nil {
+		return err
+	}
 	document := chromem.Document{
 		ID:        doc.ID,
 		Embedding: c.castToFloat32Vector(doc.Vector),
 		Content:   doc.Content,
 		Metadata: map[string]string{
-			MetadataGroup:     doc.GroupID,
-			MetadataWorkspace: doc.WorkspaceID,
-			MetadataIndex:     strconv.Itoa(doc.Index),
+			MetadataGroup: doc.GroupID,
+			MetadataIndex: strconv.Itoa(doc.Index),
 		},
 	}
 
-	return c.collection.AddDocument(ctx, document)
+	return collection.AddDocument(ctx, document)
 }
 
-func (c *chromemVectorDB) Get(ctx context.Context, id string) (Document, error) {
-	doc, err := c.collection.GetByID(ctx, id)
+func (c *chromemVectorDB) Get(
+	ctx context.Context, workspaceId string,
+	id string,
+) (Document, error) {
+	collection, err := c.db.GetOrCreateCollection(workspaceId, nil, nil)
+	if err != nil {
+		return Document{}, err
+	}
+
+	doc, err := collection.GetByID(ctx, id)
 
 	document := c.mapChromemDocToVectorDoc(doc)
 
 	return document, err
 }
 
-func (c *chromemVectorDB) SearchByGroup(ctx context.Context, vector []float64, groupId string) ([]Document, error) {
-	results, err := c.collection.QueryEmbedding(
+func (c *chromemVectorDB) Search(
+	ctx context.Context,
+	workspaceId string,
+	vector []float64,
+) ([]Document, error) {
+	collection, err := c.db.GetOrCreateCollection(workspaceId, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := collection.QueryEmbedding(
 		ctx,
 		c.castToFloat32Vector(vector),
-		c.collection.Count(),
+		collection.Count(),
+		nil,
+		nil,
+	)
+
+	documents := make([]Document, 0, len(results))
+	for _, result := range results {
+		documents = append(documents, c.mapChromemResultToVectorDoc(result))
+	}
+
+	return documents, err
+}
+
+func (c *chromemVectorDB) SearchByGroup(
+	ctx context.Context,
+	workspaceId string,
+	vector []float64,
+	groupId string,
+) ([]Document, error) {
+	collection, err := c.db.GetOrCreateCollection(workspaceId, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := collection.QueryEmbedding(
+		ctx,
+		c.castToFloat32Vector(vector),
+		collection.Count(),
 		map[string]string{
 			MetadataGroup: groupId,
 		},
@@ -84,23 +127,21 @@ func (c *chromemVectorDB) SearchByGroup(ctx context.Context, vector []float64, g
 	return documents, err
 }
 
-func (c *chromemVectorDB) SearchByWorkspace(ctx context.Context, vector []float64, workspaceId string) ([]Document, error) {
-	results, err := c.collection.QueryEmbedding(
-		ctx,
-		c.castToFloat32Vector(vector),
-		c.collection.Count(),
-		map[string]string{
-			MetadataWorkspace: workspaceId,
-		},
-		nil,
-	)
-
-	documents := make([]Document, 0, len(results))
-	for _, result := range results {
-		documents = append(documents, c.mapChromemResultToVectorDoc(result))
+func (c *chromemVectorDB) Delete(ctx context.Context, workspaceId string, id string) error {
+	collection, err := c.db.GetOrCreateCollection(workspaceId, nil, nil)
+	if err != nil {
+		return err
 	}
 
-	return documents, err
+	return collection.Delete(ctx, nil, nil, id)
+}
+
+func (c *chromemVectorDB) Purge(_ context.Context, workspaceId string) error {
+	return c.db.DeleteCollection(workspaceId)
+}
+
+func (c *chromemVectorDB) PurgeAll(_ context.Context) error {
+	return c.db.Reset()
 }
 
 func (c *chromemVectorDB) mapChromemDocToVectorDoc(doc chromem.Document) Document {
@@ -116,10 +157,6 @@ func (c *chromemVectorDB) mapChromemDocToVectorDoc(doc chromem.Document) Documen
 
 	if groupId, ok := doc.Metadata[MetadataGroup]; ok {
 		document.GroupID = groupId
-	}
-
-	if workspaceId, ok := doc.Metadata[MetadataWorkspace]; ok {
-		document.WorkspaceID = workspaceId
 	}
 
 	if idx, ok := doc.Metadata[MetadataIndex]; ok {
@@ -143,10 +180,6 @@ func (c *chromemVectorDB) mapChromemResultToVectorDoc(result chromem.Result) Doc
 
 	if groupId, ok := result.Metadata[MetadataGroup]; ok {
 		document.GroupID = groupId
-	}
-
-	if workspaceId, ok := result.Metadata[MetadataWorkspace]; ok {
-		document.WorkspaceID = workspaceId
 	}
 
 	if idx, ok := result.Metadata[MetadataIndex]; ok {

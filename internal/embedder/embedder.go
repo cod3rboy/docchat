@@ -133,13 +133,13 @@ func (e *Embedder) startIndexing(app *app.App) error {
 		// save embedding into vector db
 		err = vdb.Add(
 			app.Context(),
+			doc.Workspace,
 			vectordb.Document{
-				ID:          doc.Embedid,
-				GroupID:     doc.ID,
-				WorkspaceID: doc.Workspace,
-				Vector:      embedding.Vector,
-				Content:     embedding.Content,
-				Index:       embedding.Index,
+				ID:      doc.Embedid,
+				GroupID: doc.ID,
+				Vector:  embedding.Vector,
+				Content: embedding.Content,
+				Index:   embedding.Index,
 			},
 		)
 		if err != nil {

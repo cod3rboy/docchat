@@ -84,10 +84,10 @@ func (a *Assistant) StreamReply(
 		return "", err
 	}
 
-	docs, _ := vdb.SearchByWorkspace(
+	docs, _ := vdb.Search(
 		a.app.Context(),
-		embedding.Vector,
 		thread.Workspace,
+		embedding.Vector,
 	)
 
 	knowledge := strings.Builder{}

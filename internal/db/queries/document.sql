@@ -33,5 +33,8 @@ RETURNING id, title, extension, embedid, indexed, workspace, created;
 -- name: MarkDocumentAsIndexed :exec
 UPDATE documents SET indexed = TRUE WHERE id = ?;
 
+-- name: MarkAllDocumentsAsUnindexed :exec
+UPDATE documents SET indexed = FALSE;
+
 -- name: DeleteDocument :exec
 DELETE FROM documents WHERE id = ?;

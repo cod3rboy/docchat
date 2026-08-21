@@ -7,6 +7,7 @@ import (
 
 	"github.com/cod3rboy/docchat/internal/app"
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type ModelSettings struct {
@@ -48,6 +49,8 @@ func (s *Settings) SaveModelSettings(settings ModelSettings) error {
 		return err
 	}
 
+	hasEmbedModelChanged := prefs.Models.EmbedModel != settings.EmbeddingModel
+
 	prefs.Models.OpenAICompatAPIURL = settings.APIEndpoint
 	prefs.Models.APIKey = settings.APIKey
 	prefs.Models.PrimaryModel = settings.PrimaryModel
@@ -58,6 +61,10 @@ func (s *Settings) SaveModelSettings(settings ModelSettings) error {
 	}
 
 	s.app.ResetLLM()
+
+	if hasEmbedModelChanged {
+		runtime.EventsEmit(s.app.Context(), EventEmbedModelChanged)
+	}
 
 	return nil
 }

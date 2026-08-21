@@ -26,6 +26,10 @@ export function List(arg1) {
   return window['go']['bindings']['Document']['List'](arg1);
 }
 
+export function RebuildIndex() {
+  return window['go']['bindings']['Document']['RebuildIndex']();
+}
+
 export function RefreshIndex() {
   return window['go']['bindings']['Document']['RefreshIndex']();
 }

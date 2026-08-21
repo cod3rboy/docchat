@@ -23,10 +23,23 @@ type Document struct {
 }
 
 func NewDocument(application *app.App, embdr *embedder.Embedder) *Document {
-	return &Document{
+	document := &Document{
 		app:   application,
 		embdr: embdr,
 	}
+
+	application.AddStartupHook(func(app *app.App) error {
+		runtime.EventsOn(
+			app.Context(),
+			EventEmbedModelChanged,
+			func(values ...any) {
+				document.RebuildIndex()
+			},
+		)
+		return nil
+	})
+
+	return document
 }
 
 func (d *Document) List(workspaceId string) ([]document.ListDocumentsRow, error) {
@@ -149,9 +162,19 @@ func (d *Document) Delete(id string) error {
 		return err
 	}
 
-	// TODO: also delete its vector embeddings
+	vdb, err := d.app.VDB()
+	if err != nil {
+		return err
+	}
 
-	return db.Documents.DeleteDocument(d.app.Context(), id)
+	doc, err := db.Documents.GetDocument(d.app.Context(), id)
+	if err != nil {
+		return err
+	}
+
+	vdb.Delete(d.app.Context(), doc.Workspace, doc.Embedid)
+
+	return db.Documents.DeleteDocument(d.app.Context(), doc.ID)
 }
 
 func (d *Document) RefreshIndex() error {
@@ -160,6 +183,28 @@ func (d *Document) RefreshIndex() error {
 
 func (d *Document) EmbedderState() string {
 	return d.embdr.State()
+}
+
+func (d *Document) RebuildIndex() error {
+	db, err := d.app.DB()
+	if err != nil {
+		return err
+	}
+
+	vdb, err := d.app.VDB()
+	if err != nil {
+		return err
+	}
+
+	if err := db.Documents.MarkAllDocumentsAsUnindexed(d.app.Context()); err != nil {
+		return err
+	}
+
+	if err := vdb.PurgeAll(d.app.Context()); err != nil {
+		return err
+	}
+
+	return d.embdr.Index()
 }
 
 func (d *Document) extractTextFromContent(content []byte, contentType string) (string, error) {

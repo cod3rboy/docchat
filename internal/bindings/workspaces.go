@@ -107,5 +107,12 @@ func (w *Workspace) Delete(id string) error {
 		return err
 	}
 
+	vdb, err := w.app.VDB()
+	if err != nil {
+		return err
+	}
+
+	vdb.Purge(w.app.Context(), id)
+
 	return db.Workspaces.DeleteWorkspace(w.app.Context(), id)
 }

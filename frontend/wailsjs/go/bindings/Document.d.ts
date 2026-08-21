@@ -14,4 +14,6 @@ export function Get(arg1:string):Promise<document.GetDocumentRow>;
 
 export function List(arg1:string):Promise<Array<document.ListDocumentsRow>>;
 
+export function RebuildIndex():Promise<void>;
+
 export function RefreshIndex():Promise<void>;

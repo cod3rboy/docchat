@@ -198,6 +198,15 @@ func (q *Queries) ListDocuments(ctx context.Context, workspace string) ([]ListDo
 	return items, nil
 }
 
+const markAllDocumentsAsUnindexed = `-- name: MarkAllDocumentsAsUnindexed :exec
+UPDATE documents SET indexed = FALSE
+`
+
+func (q *Queries) MarkAllDocumentsAsUnindexed(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, markAllDocumentsAsUnindexed)
+	return err
+}
+
 const markDocumentAsIndexed = `-- name: MarkDocumentAsIndexed :exec
 UPDATE documents SET indexed = TRUE WHERE id = ?
 `
