@@ -1,5 +1,5 @@
 import { message, ai } from "../../wailsjs/go/models";
-import { formatDistanceToNow } from "date-fns";
+import { dayjs } from "../../lib/dayjs";
 
 export class Message {
   public readonly id: string;
@@ -21,7 +21,7 @@ export class Message {
   }
 
   public get friendlyTimestamp(): string {
-    return formatDistanceToNow(this.created, { addSuffix: true });
+    return dayjs(this.created).fromNow();
   }
 
   public toAssistantMessage(): ai.Message {
