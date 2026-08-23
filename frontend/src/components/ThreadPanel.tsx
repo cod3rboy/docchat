@@ -38,7 +38,9 @@ export function ThreadPanel({}: ThreadPanelProps) {
     loadThreads();
   };
   const handleRenameThread = async (thread: Thread) => {
-    await renameThread(thread.id, thread.title);
+    const updated = await renameThread(thread.id, thread.title);
+    const renamedThread = new Thread(updated);
+    changeThread(renamedThread);
     loadThreads();
   };
   const handleDeleteThread = async (t: Thread) => {
