@@ -10,6 +10,7 @@ import {
   Create as createMessage,
 } from "../../wailsjs/go/bindings/Message";
 import { useAssistantReplyStream } from "../hooks/useAssistantReplyStream";
+import { toast } from "sonner";
 
 export interface ThreadChatPanelProps {
   thread: Thread;
@@ -26,6 +27,9 @@ export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
       const record = await createMessage(message, "assistant", thread.id);
       const msg = new Message(record);
       setMessages((msgs) => [msg, ...msgs]);
+    },
+    onStreamError: (err: Error) => {
+      toast.error("Chat Error", { description: err.message });
     },
   });
 

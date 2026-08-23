@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import { AppPanel } from "./components/AppPanel";
 import { AppShell } from "./components/AppShell";
 import { ChatPanel } from "./components/ChatPanel";
@@ -18,6 +19,13 @@ function App() {
             <ThreadPanel />
           </ThreadProvider>
         </WorkspaceProvider>
+        <Toaster
+          richColors
+          position="top-right"
+          duration={6000}
+          closeButton
+          swipeDirections={["left", "right"]}
+        />
       </AppShell>
     </div>
   );
