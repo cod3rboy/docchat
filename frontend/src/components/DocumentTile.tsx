@@ -8,24 +8,19 @@ export interface DocumentTileProps {
 export function DocumentTile({ document }: DocumentTileProps) {
   return (
     <Flex
-      px="2"
-      py="4"
-      direction="column"
-      justify="center"
-      gap="2"
+      p="1"
+      direction="row"
+      align="center"
+      justify="start"
+      gap="1"
       style={{
         border: "1px solid var(--gray-6)",
         borderRadius: "var(--radius-2)",
       }}
     >
-      <img
-        style={{ margin: "0 auto" }}
-        width="32"
-        height="32"
-        src={document.fileIcon}
-      />
+      <img width="24" height="24" src={document.fileIcon} />
       <Tooltip content={document.fileName}>
-        <Text align="center" size="2" truncate>
+        <Text size="1" className="select-none" truncate>
           {document.title}
         </Text>
       </Tooltip>

@@ -39,7 +39,7 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
     <Grid mt="2" columns="1" rows="auto 1fr" overflow="hidden">
       <KnowledgePanelHeader onAddDocument={_addDocument} />
       <ScrollArea size="1" scrollbars="vertical" type="hover">
-        <Grid columns="2" gap="2" p="2">
+        <Grid columns="1" gap="1" p="1">
           {documents.map((doc) => (
             <DocumentTile key={doc.id} document={doc} />
           ))}
