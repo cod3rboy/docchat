@@ -88,6 +88,7 @@ export function LLMModelSettings({
             <IconButton
               variant="ghost"
               onClick={() => setRevealKey((reveal) => !reveal)}
+              radius="full"
             >
               {revealKey ? (
                 <EyeOpenIcon height="16" width="16" />

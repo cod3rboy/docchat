@@ -35,7 +35,7 @@ export function WorkspacePanel({
           onSubmit={onAdd}
           clearable
         >
-          <IconButton variant="ghost">
+          <IconButton variant="ghost" radius="full">
             <PlusIcon />
           </IconButton>
         </WorkspaceFormPopover>

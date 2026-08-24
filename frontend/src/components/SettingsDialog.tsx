@@ -56,7 +56,7 @@ export function SettingsDialog({}: SettingsDialogProps) {
             </Flex>
           </Dialog.Title>
           <Dialog.Close>
-            <IconButton variant="ghost">
+            <IconButton variant="ghost" radius="full">
               <Cross1Icon />
             </IconButton>
           </Dialog.Close>

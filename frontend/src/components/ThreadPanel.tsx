@@ -94,6 +94,7 @@ export function ThreadPanel({}: ThreadPanelProps) {
           <IconButton
             variant="ghost"
             onClick={() => handleCreateThread("Untitled")}
+            radius="full"
           >
             <PlusIcon width="16" height="16" />
           </IconButton>

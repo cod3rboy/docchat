@@ -78,6 +78,7 @@ export function ThreadTile({
                   <IconButton
                     size="2"
                     color="red"
+                    radius="full"
                     onClick={() => onDelete(thread)}
                   >
                     <TrashIcon />

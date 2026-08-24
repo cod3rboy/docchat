@@ -48,6 +48,7 @@ export function WorkspaceSelector({
             <IconButton
               size="1"
               variant="soft"
+              radius="full"
               disabled={!workspace?.canRename}
             >
               <Pencil1Icon />
@@ -59,6 +60,7 @@ export function WorkspaceSelector({
             <IconButton
               size="1"
               variant="soft"
+              radius="full"
               color="red"
               disabled={!workspace?.canDelete}
             >
@@ -71,7 +73,12 @@ export function WorkspaceSelector({
                 Want to delete <Em>{workspace?.name}</Em> workspace?
               </Text>
               <Popover.Close>
-                <IconButton size="2" color="red" onClick={deleteWorkspace}>
+                <IconButton
+                  size="2"
+                  color="red"
+                  radius="full"
+                  onClick={deleteWorkspace}
+                >
                   <TrashIcon />
                 </IconButton>
               </Popover.Close>

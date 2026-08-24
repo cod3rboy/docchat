@@ -46,14 +46,14 @@ export function KnowledgePanelHeader({
         )}
         {indexerState === IndexerState.Errored && (
           <Tooltip content="Indexing failed! Click to retry">
-            <IconButton variant="ghost" onClick={refreshIndex}>
+            <IconButton variant="ghost" onClick={refreshIndex} radius="full">
               <ReloadIcon color="red" />
             </IconButton>
           </Tooltip>
         )}
       </Flex>
       <KnowledgeFileDialog onAdd={onAddDocument}>
-        <IconButton variant="ghost">
+        <IconButton variant="ghost" radius="full">
           <PlusIcon />
         </IconButton>
       </KnowledgeFileDialog>
