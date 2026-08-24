@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ChatBubbleIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Flex,
@@ -26,33 +26,50 @@ export function ThreadPanel({}: ThreadPanelProps) {
   const { workspace } = useWorkspace();
   const { thread, changeThread, clearThread } = useThread();
 
-  const loadThreads = async () => {
+  const loadThreads = useCallback(async () => {
     const records = (await listThreads(workspace.id)) ?? [];
     const threads = records.map((record) => new Thread(record));
 
     setThreads(threads);
-  };
+  }, [workspace.id]);
 
-  const handleCreateThread = async (title: string) => {
-    await createThread(title, workspace.id);
-    loadThreads();
-  };
-  const handleRenameThread = async (thread: Thread) => {
-    const updated = await renameThread(thread.id, thread.title);
-    const renamedThread = new Thread(updated);
-    changeThread(renamedThread);
-    loadThreads();
-  };
-  const handleDeleteThread = async (t: Thread) => {
-    await deleteThread(t.id);
-    if (thread?.id === t.id) {
-      clearThread();
-    }
-    loadThreads();
-  };
-  const handleSelectThread = async (thread: Thread) => {
-    await changeThread(thread);
-  };
+  const handleCreateThread = useCallback(
+    async (title: string) => {
+      const threadRecord = await createThread(title, workspace.id);
+      const thread = new Thread(threadRecord);
+      loadThreads();
+      changeThread(thread);
+    },
+    [workspace.id, loadThreads, changeThread],
+  );
+
+  const handleRenameThread = useCallback(
+    async (thread: Thread) => {
+      const updated = await renameThread(thread.id, thread.title);
+      const renamedThread = new Thread(updated);
+      loadThreads();
+      changeThread(renamedThread);
+    },
+    [loadThreads, changeThread],
+  );
+
+  const handleDeleteThread = useCallback(
+    async (threadToDelete: Thread) => {
+      await deleteThread(threadToDelete.id);
+      if (thread?.id === threadToDelete.id) {
+        clearThread();
+      }
+      loadThreads();
+    },
+    [thread?.id, clearThread, loadThreads],
+  );
+
+  const handleSelectThread = useCallback(
+    (thread: Thread) => {
+      changeThread(thread);
+    },
+    [changeThread],
+  );
 
   useEffect(() => {
     loadThreads();
