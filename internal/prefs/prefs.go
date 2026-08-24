@@ -21,15 +21,16 @@ type ModelPreferences struct {
 }
 
 type Preferences struct {
-	savePath string `toml:"-"`
-
-	Models ModelPreferences `toml:"models" comment:"Configure your LLM provider"`
+	savePath  string           `toml:"-"`
+	Workspace string           `toml:"workspace" comment:"Selected workspace"`
+	Models    ModelPreferences `toml:"models" comment:"Configure your LLM provider"`
 }
 
 func Load(appDir string) (Preferences, error) {
 	prefsPath := filepath.Join(appDir, PrefsFileName)
 	preferences := Preferences{
-		savePath: prefsPath,
+		savePath:  prefsPath,
+		Workspace: "3HG2ny2C5QUnpOHuOHrEXUk6PXG", // default workspace id
 	}
 
 	content, err := os.ReadFile(prefsPath)

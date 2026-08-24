@@ -1,5 +1,17 @@
-import { createContext, PropsWithChildren, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { Workspace } from "../models/workspace";
+import {
+  SelectedWorkspace as getSelectedWorkspaceId,
+  ChangeWorkspace as changeSelectedWorkspace,
+} from "../../wailsjs/go/bindings/Settings";
+import { Get as getWorkspaceById } from "../../wailsjs/go/bindings/Workspace";
 
 export interface WorkspaceContextType {
   workspace: Workspace;
@@ -24,21 +36,34 @@ export const WorkspaceContext = createContext<WorkspaceContextType>({
 export function WorkspaceProvider({ children }: PropsWithChildren) {
   const [workspace, setWorkspace] = useState<Workspace>(defaultWorkspace);
 
-  // TODO: fetch it from the storage (useEffect)
+  const fetchSelectedWorkspace = useCallback(async () => {
+    const selectedWorkspaceId = await getSelectedWorkspaceId();
+    const selectedWorkspaceRecord = await getWorkspaceById(selectedWorkspaceId);
+    const selectedWorkspace = new Workspace(selectedWorkspaceRecord);
 
-  const changeWorkspace = (workspace: Workspace) => {
-    // TODO: persist the change in the storage
+    return selectedWorkspace;
+  }, []);
+
+  useEffect(() => {
+    (async () => setWorkspace(await fetchSelectedWorkspace()))();
+  }, []);
+
+  const changeWorkspace = useCallback((workspace: Workspace) => {
     setWorkspace(workspace);
-  };
+    changeSelectedWorkspace(workspace.id);
+  }, []);
 
-  const changeToDefaultWorkspace = () => {
+  const changeToDefaultWorkspace = useCallback(() => {
     changeWorkspace(defaultWorkspace);
-  };
+  }, []);
+
+  const workspaceCtxValue = useMemo(
+    () => ({ workspace, changeWorkspace, changeToDefaultWorkspace }),
+    [workspace, changeWorkspace, changeToDefaultWorkspace],
+  );
 
   return (
-    <WorkspaceContext.Provider
-      value={{ workspace, changeWorkspace, changeToDefaultWorkspace }}
-    >
+    <WorkspaceContext.Provider value={workspaceCtxValue}>
       {children}
     </WorkspaceContext.Provider>
   );

@@ -110,3 +110,20 @@ func (s *Settings) ListModels(apiEndpoint, apiKey string) ([]string, error) {
 
 	return models, nil
 }
+
+func (s *Settings) SelectedWorkspace() (string, error) {
+	prefs, err := s.app.Prefs()
+
+	return prefs.Workspace, err
+}
+
+func (s *Settings) ChangeWorkspace(workspaceId string) error {
+	prefs, err := s.app.Prefs()
+	if err != nil {
+		return err
+	}
+
+	prefs.Workspace = workspaceId
+
+	return prefs.Save()
+}
