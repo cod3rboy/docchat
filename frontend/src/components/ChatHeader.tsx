@@ -1,5 +1,5 @@
 import { QuoteIcon } from "@radix-ui/react-icons";
-import { Box, Flex, Heading } from "@radix-ui/themes";
+import { Grid, Heading, Tooltip } from "@radix-ui/themes";
 
 export type ChatHeaderProps = {
   title: string;
@@ -7,24 +7,30 @@ export type ChatHeaderProps = {
 
 export function ChatHeader({ title }: ChatHeaderProps) {
   return (
-    <Flex
-      direction="row"
+    <Grid
+      rows="1fr"
+      columns="auto 1fr"
       align="center"
-      px="1"
-      py="2"
+      p="1"
+      gap="1"
       height="3.6rem"
       overflow="hidden"
-      gap="2"
       style={{
         borderBottom: "1px solid var(--gray-6)",
       }}
     >
-      <QuoteIcon />
-      <Box as="div">
-        <Heading as="h2" size="3" weight="medium">
+      <QuoteIcon height="20" width="20" />
+      <Tooltip content={title}>
+        <Heading
+          as="h2"
+          size="3"
+          weight="medium"
+          className="select-none"
+          truncate
+        >
           {title}
         </Heading>
-      </Box>
-    </Flex>
+      </Tooltip>
+    </Grid>
   );
 }
