@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Flex, Heading, Tooltip, Spinner, IconButton } from "@radix-ui/themes";
 import { ReloadIcon, CheckCircledIcon, PlusIcon } from "@radix-ui/react-icons";
 import { KnowledgeFileDialog } from "./KnowledgeFileDialog";
@@ -5,12 +6,20 @@ import { IndexerState, useDocIndexer } from "../hooks/useDocIndexer";
 
 export interface KnowledgePanelHeaderProps {
   onAddDocument: (filePath: string) => void;
+  onIndexerFinish: () => void;
 }
 
 export function KnowledgePanelHeader({
   onAddDocument,
+  onIndexerFinish,
 }: KnowledgePanelHeaderProps) {
   const { state: indexerState, refresh: refreshIndex } = useDocIndexer();
+
+  useEffect(() => {
+    if (indexerState === IndexerState.Idle) {
+      onIndexerFinish();
+    }
+  }, [indexerState, onIndexerFinish]);
 
   return (
     <Flex

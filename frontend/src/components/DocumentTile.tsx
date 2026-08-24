@@ -1,5 +1,6 @@
-import { Flex, Tooltip, Text } from "@radix-ui/themes";
+import { Flex, Tooltip, Text, Box } from "@radix-ui/themes";
 import { Document } from "../models/document";
+import { UpdateIcon } from "@radix-ui/react-icons";
 
 export interface DocumentTileProps {
   document: Document;
@@ -24,6 +25,11 @@ export function DocumentTile({ document }: DocumentTileProps) {
           {document.title}
         </Text>
       </Tooltip>
+      {!document.indexed && (
+        <Box ml="auto">
+          <UpdateIcon width="12" height="12" color="gray" />
+        </Box>
+      )}
     </Flex>
   );
 }

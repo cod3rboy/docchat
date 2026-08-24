@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Grid, ScrollArea } from "@radix-ui/themes";
 import {
   List as listDocuments,
@@ -18,18 +18,21 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
   const [documents, setDocuments] = useState<Document[]>([]);
   const { workspace } = useWorkspace();
 
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     const docList = (await listDocuments(workspaceId)) ?? [];
     const docs = docList.map((doc) => new Document(doc));
 
     setDocuments(docs);
-  };
+  }, [workspaceId]);
 
-  const _addDocument = async (filePath: string) => {
-    const doc = await addDocument(filePath, workspaceId);
-    toast.success("Document added", { description: doc.Title });
-    loadDocuments();
-  };
+  const _addDocument = useCallback(
+    async (filePath: string) => {
+      const doc = await addDocument(filePath, workspaceId);
+      toast.success("Document added", { description: doc.Title });
+      loadDocuments();
+    },
+    [workspaceId, loadDocuments],
+  );
 
   useEffect(() => {
     loadDocuments();
@@ -37,7 +40,10 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
 
   return (
     <Grid mt="2" columns="1" rows="auto 1fr" overflow="hidden">
-      <KnowledgePanelHeader onAddDocument={_addDocument} />
+      <KnowledgePanelHeader
+        onAddDocument={_addDocument}
+        onIndexerFinish={loadDocuments}
+      />
       <ScrollArea size="1" scrollbars="vertical" type="hover">
         <Grid columns="1" gap="1" p="1">
           {documents.map((doc) => (
