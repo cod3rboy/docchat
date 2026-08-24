@@ -9,3 +9,10 @@ install-tools:
 	go install github.com/pressly/goose/v3/cmd/goose@latest
 	@echo "Done: goose"
 	@echo "All tools are installed!"
+
+migration:
+ifdef name
+	goose -dir internal/db/migrations create ${name} sql
+else
+	@echo "name=<migration_name> is not specified"
+endif
