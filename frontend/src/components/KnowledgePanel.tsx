@@ -3,6 +3,7 @@ import { Grid, ScrollArea } from "@radix-ui/themes";
 import {
   List as listDocuments,
   Add as addDocument,
+  Delete as deleteDocument,
 } from "../../wailsjs/go/bindings/Document";
 import { Document } from "../models/document";
 import { useWorkspace } from "../hooks/useWorkspace";
@@ -34,6 +35,15 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
     [workspaceId, loadDocuments],
   );
 
+  const _deleteDocument = useCallback(
+    async (document: Document) => {
+      await deleteDocument(document.id);
+      toast.info("Document deleted", { description: document.fileName });
+      loadDocuments();
+    },
+    [loadDocuments],
+  );
+
   useEffect(() => {
     loadDocuments();
   }, [workspace.id]);
@@ -47,7 +57,11 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
       <ScrollArea size="1" scrollbars="vertical" type="hover">
         <Grid columns="1" gap="1" p="1">
           {documents.map((doc) => (
-            <DocumentTile key={doc.id} document={doc} />
+            <DocumentTile
+              key={doc.id}
+              document={doc}
+              onDelete={_deleteDocument}
+            />
           ))}
         </Grid>
       </ScrollArea>
