@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Em, Flex, Grid, IconButton, Popover, Text } from "@radix-ui/themes";
+import { useCallback, useState } from "react";
+import { Flex, Grid, IconButton, Text } from "@radix-ui/themes";
 import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { ThreadFormPopover } from "./ThreadFormPopover";
+import { ThreadDeletePopover } from "./ThreadDeletePopover";
 import { Thread } from "../models/thread";
 
 export interface ThreadTileProps {
@@ -20,13 +21,29 @@ export function ThreadTile({
   onSelectTile,
 }: ThreadTileProps) {
   const [isHover, setIsHover] = useState<boolean>(false);
+  const [anchored, setAnchored] = useState<boolean>(false);
   const inactiveClasses = "cursor-default hover:bg-gray-100 hover:rounded-2xl";
   const activeClasses = "cursor-default bg-gray-100 rounded-2xl";
 
-  const handleRename = (threadTitle: string) => {
-    thread.changeTitle(threadTitle);
-    onRename(thread);
-  };
+  const handleRename = useCallback(
+    (threadTitle: string) => {
+      thread.changeTitle(threadTitle);
+      onRename(thread);
+    },
+    [thread, onRename],
+  );
+
+  const handleOnAction = useCallback(() => {
+    setAnchored(true);
+  }, []);
+
+  const handlePopoverDismiss = useCallback(() => {
+    setAnchored(false);
+  }, []);
+
+  const handleOnDeleteConfirm = useCallback(() => {
+    onDelete(thread);
+  }, [thread, onDelete]);
 
   return (
     <Grid
@@ -40,10 +57,10 @@ export function ThreadTile({
       onMouseLeave={() => setIsHover(false)}
       onClick={() => onSelectTile(thread)}
     >
-      <Text size="2" weight={isHover ? "bold" : "medium"} truncate>
+      <Text size="2" weight={isHover || anchored ? "bold" : "medium"} truncate>
         {thread.title}
       </Text>
-      {isHover && (
+      {(isHover || anchored) && (
         <Flex
           gap="1"
           px="2"
@@ -58,35 +75,26 @@ export function ThreadTile({
             actionLabel="Save"
             prefill={thread.title}
             onSubmit={handleRename}
+            onDismiss={handlePopoverDismiss}
           >
-            <IconButton size="1" radius="full">
+            <IconButton size="1" radius="full" onClick={handleOnAction}>
               <Pencil1Icon />
             </IconButton>
           </ThreadFormPopover>
-          <Popover.Root>
-            <Popover.Trigger>
-              <IconButton size="1" color="red" radius="full">
-                <TrashIcon />
-              </IconButton>
-            </Popover.Trigger>
-            <Popover.Content>
-              <Flex gap="3" align="center">
-                <Text size="2">
-                  Want to <Em>permanently</Em> delete this thread?
-                </Text>
-                <Popover.Close>
-                  <IconButton
-                    size="2"
-                    color="red"
-                    radius="full"
-                    onClick={() => onDelete(thread)}
-                  >
-                    <TrashIcon />
-                  </IconButton>
-                </Popover.Close>
-              </Flex>
-            </Popover.Content>
-          </Popover.Root>
+
+          <ThreadDeletePopover
+            onConfirm={handleOnDeleteConfirm}
+            onDismiss={handlePopoverDismiss}
+          >
+            <IconButton
+              size="1"
+              color="red"
+              radius="full"
+              onClick={handleOnAction}
+            >
+              <TrashIcon />
+            </IconButton>
+          </ThreadDeletePopover>
         </Flex>
       )}
     </Grid>

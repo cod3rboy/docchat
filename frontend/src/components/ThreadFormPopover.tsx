@@ -2,6 +2,7 @@ import { Button, Flex, Heading, Popover, TextField } from "@radix-ui/themes";
 import {
   PropsWithChildren,
   SubmitEventHandler,
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -11,6 +12,7 @@ export interface ThreadFormPopoverProps {
   actionLabel: string;
   onSubmit: (title: string) => void;
   prefill?: string;
+  onDismiss?: () => void;
   clearable?: boolean;
 }
 
@@ -20,9 +22,11 @@ export function ThreadFormPopover({
   onSubmit,
   children,
   prefill,
+  onDismiss,
   clearable = false,
 }: PropsWithChildren<ThreadFormPopoverProps>) {
   const [threadTitle, setThreadTitle] = useState<string>(prefill ?? "");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (prefill && !clearable) {
@@ -43,8 +47,18 @@ export function ThreadFormPopover({
     }
   };
 
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      if (!open && onDismiss) {
+        onDismiss();
+      }
+    },
+    [onDismiss],
+  );
+
   return (
-    <Popover.Root>
+    <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Popover.Trigger>{children}</Popover.Trigger>
       <Popover.Content>
         <Heading mb="2" size="2" weight="medium">
