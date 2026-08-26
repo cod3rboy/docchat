@@ -18,6 +18,7 @@ import {
   Rename as renameWorkspace,
 } from "../../wailsjs/go/bindings/Workspace";
 import { useWorkspace } from "../hooks/useWorkspace";
+import { Brand } from "./Brand";
 
 export function AppPanel() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -82,7 +83,7 @@ export function AppPanel() {
     <Grid columns="1" rows="auto auto 1fr" height="100vh">
       <Box p="2">
         <Flex gap="2" justify="between">
-          <Heading as="h1">Doc Chat</Heading>
+          <Brand />
           <Tooltip content="Settings">
             <IconButton
               variant="soft"
