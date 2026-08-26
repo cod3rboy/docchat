@@ -37,6 +37,20 @@ export namespace bindings {
 	        this.embeddingModel = source["embeddingModel"];
 	    }
 	}
+	export class ThemeSettings {
+	    mode: string;
+	    accent: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ThemeSettings(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.mode = source["mode"];
+	        this.accent = source["accent"];
+	    }
+	}
 
 }
 

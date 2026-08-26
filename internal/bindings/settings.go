@@ -17,6 +17,11 @@ type ModelSettings struct {
 	EmbeddingModel string `json:"embeddingModel"`
 }
 
+type ThemeSettings struct {
+	Mode   string `json:"mode"`
+	Accent string `json:"accent"`
+}
+
 type Settings struct {
 	app *app.App
 }
@@ -124,6 +129,42 @@ func (s *Settings) ChangeWorkspace(workspaceId string) error {
 	}
 
 	prefs.Workspace = workspaceId
+
+	return prefs.Save()
+}
+
+func (s *Settings) GetThemeSettings() (ThemeSettings, error) {
+	settings := ThemeSettings{}
+
+	prefs, err := s.app.Prefs()
+	if err != nil {
+		return settings, err
+	}
+
+	settings.Mode = prefs.Theme.Mode
+	settings.Accent = prefs.Theme.Accent
+
+	return settings, nil
+}
+
+func (s *Settings) ChangeThemeMode(mode string) error {
+	prefs, err := s.app.Prefs()
+	if err != nil {
+		return err
+	}
+
+	prefs.Theme.Mode = mode
+
+	return prefs.Save()
+}
+
+func (s *Settings) ChangeThemeAccent(accent string) error {
+	prefs, err := s.app.Prefs()
+	if err != nil {
+		return err
+	}
+
+	prefs.Theme.Accent = accent
 
 	return prefs.Save()
 }

@@ -20,10 +20,16 @@ type ModelPreferences struct {
 	EmbedModel         string `toml:"embed-model" comment:"Model to use for vector emebeddings."`
 }
 
+type ThemePreferences struct {
+	Mode   string `toml:"mode" comment:"Theme mode - light, dark or auto"`
+	Accent string `toml:"accent" comment:"Theme accent color"`
+}
+
 type Preferences struct {
 	savePath  string           `toml:"-"`
 	Workspace string           `toml:"workspace" comment:"Selected workspace"`
 	Models    ModelPreferences `toml:"models" comment:"Configure your LLM provider"`
+	Theme     ThemePreferences `toml:"theme" comment:"Customize application theme"`
 }
 
 func Load(appDir string) (Preferences, error) {

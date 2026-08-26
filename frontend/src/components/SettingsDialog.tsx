@@ -8,10 +8,16 @@ import {
   Flex,
   Text,
 } from "@radix-ui/themes";
-import { Cross1Icon, CubeIcon, GearIcon } from "@radix-ui/react-icons";
+import {
+  BlendingModeIcon,
+  Cross1Icon,
+  CubeIcon,
+  GearIcon,
+} from "@radix-ui/react-icons";
 import { LLMModelSettings } from "./LLMModelSettings";
 import { useModelSettings } from "../hooks/useModelSettings";
 import { useModels } from "../hooks/useModels";
+import { ThemeSettings } from "./ThemeSettings";
 
 export interface SettingsDialogProps {}
 
@@ -69,7 +75,12 @@ export function SettingsDialog({}: SettingsDialogProps) {
                 <Text>Models</Text>
               </Flex>
             </Tabs.Trigger>
-            <Tabs.Trigger value="themes">Themes</Tabs.Trigger>
+            <Tabs.Trigger value="themes">
+              <Flex gap="1" align="center">
+                <BlendingModeIcon />
+                <Text>Themes</Text>
+              </Flex>
+            </Tabs.Trigger>
             <Tabs.Trigger value="about">About</Tabs.Trigger>
           </Tabs.List>
           <Box pt="3">
@@ -81,8 +92,7 @@ export function SettingsDialog({}: SettingsDialogProps) {
               />
             </Tabs.Content>
             <Tabs.Content value="themes">
-              This is themes settings tab content where use can choose from a
-              variety of colorful themes.
+              <ThemeSettings />
             </Tabs.Content>
             <Tabs.Content value="about">
               This is about tab content that shows tha application and author
