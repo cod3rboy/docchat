@@ -22,8 +22,9 @@ export function ThreadTile({
 }: ThreadTileProps) {
   const [isHover, setIsHover] = useState<boolean>(false);
   const [anchored, setAnchored] = useState<boolean>(false);
-  const inactiveClasses = "cursor-default hover:bg-gray-100 hover:rounded-2xl";
-  const activeClasses = "cursor-default bg-gray-100 rounded-2xl";
+  const inactiveClasses =
+    "cursor-default hover:bg-(--focus-3) hover:rounded-2xl";
+  const activeClasses = "cursor-default bg-(--focus-6) rounded-2xl";
 
   const handleRename = useCallback(
     (threadTitle: string) => {
