@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { ChatBubbleIcon, PlusIcon } from "@radix-ui/react-icons";
+import { ChatBubbleIcon, PlusIcon, QuoteIcon } from "@radix-ui/react-icons";
 import {
   Flex,
   Grid,
@@ -7,6 +7,7 @@ import {
   IconButton,
   ScrollArea,
   Tooltip,
+  Text,
 } from "@radix-ui/themes";
 import { ThreadList } from "./ThreadList";
 import {
@@ -100,15 +101,24 @@ export function ThreadPanel({}: ThreadPanelProps) {
           </IconButton>
         </Tooltip>
       </Flex>
-      <ScrollArea size="1" scrollbars="vertical" type="hover" className="p-1">
-        <ThreadList
-          threads={threads}
-          activeThread={thread}
-          onRenameThread={handleRenameThread}
-          onDeleteThread={handleDeleteThread}
-          onSelectThread={handleSelectThread}
-        />
-      </ScrollArea>
+      {threads.length > 0 ? (
+        <ScrollArea size="1" scrollbars="vertical" type="hover" className="p-1">
+          <ThreadList
+            threads={threads}
+            activeThread={thread}
+            onRenameThread={handleRenameThread}
+            onDeleteThread={handleDeleteThread}
+            onSelectThread={handleSelectThread}
+          />
+        </ScrollArea>
+      ) : (
+        <Flex justify="center" align="center" gap="1">
+          <QuoteIcon width="18" height="18" color="gray" />
+          <Text color="gray" size="2">
+            No threads
+          </Text>
+        </Flex>
+      )}
     </Grid>
   );
 }

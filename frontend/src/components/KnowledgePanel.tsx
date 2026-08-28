@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Grid, ScrollArea } from "@radix-ui/themes";
+import { Flex, Grid, ScrollArea, Text } from "@radix-ui/themes";
 import {
   List as listDocuments,
   Add as addDocument,
@@ -10,6 +10,7 @@ import { useWorkspace } from "../hooks/useWorkspace";
 import { DocumentTile } from "./DocumentTile";
 import { KnowledgePanelHeader } from "./KnowledgePanelHeader";
 import { toast } from "sonner";
+import { FileIcon } from "@radix-ui/react-icons";
 
 interface KnowledgePanelProps {
   workspaceId: string;
@@ -54,17 +55,26 @@ export function KnowledgePanel({ workspaceId }: KnowledgePanelProps) {
         onAddDocument={_addDocument}
         onIndexerFinish={loadDocuments}
       />
-      <ScrollArea size="1" scrollbars="vertical" type="hover">
-        <Grid columns="1" gap="1" p="1">
-          {documents.map((doc) => (
-            <DocumentTile
-              key={doc.id}
-              document={doc}
-              onDelete={_deleteDocument}
-            />
-          ))}
-        </Grid>
-      </ScrollArea>
+      {documents.length > 0 ? (
+        <ScrollArea size="1" scrollbars="vertical" type="hover">
+          <Grid columns="1" gap="1" p="1">
+            {documents.map((doc) => (
+              <DocumentTile
+                key={doc.id}
+                document={doc}
+                onDelete={_deleteDocument}
+              />
+            ))}
+          </Grid>
+        </ScrollArea>
+      ) : (
+        <Flex justify="center" align="center" gap="1">
+          <FileIcon width="18" height="18" color="gray" />
+          <Text color="gray" size="2">
+            No documents
+          </Text>
+        </Flex>
+      )}
     </Grid>
   );
 }
