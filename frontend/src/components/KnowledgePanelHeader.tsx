@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { Flex, Heading, Tooltip, Spinner, IconButton } from "@radix-ui/themes";
 import { ReloadIcon, CheckCircledIcon, PlusIcon } from "@radix-ui/react-icons";
-import { KnowledgeFileDialog } from "./KnowledgeFileDialog";
 import { IndexerState, useDocIndexer } from "../hooks/useDocIndexer";
+import { KnowledgeMenu } from "./KnowledgeMenu";
 
 export interface KnowledgePanelHeaderProps {
   onAddDocument: (filePath: string) => void;
@@ -52,11 +52,7 @@ export function KnowledgePanelHeader({
           </Tooltip>
         )}
       </Flex>
-      <KnowledgeFileDialog onAdd={onAddDocument}>
-        <IconButton variant="ghost" radius="full">
-          <PlusIcon />
-        </IconButton>
-      </KnowledgeFileDialog>
+      <KnowledgeMenu onDocumentSelect={onAddDocument} />
     </Flex>
   );
 }
