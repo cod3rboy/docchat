@@ -1,6 +1,6 @@
-import { Avatar, Grid } from "@radix-ui/themes";
+import { Box, Grid } from "@radix-ui/themes";
 import { ChatBubble } from "./ChatBubble";
-import AvatarPerson from "../assets/images/avatar_person.svg";
+import { AvatarUser } from "./AvatarUser";
 import { Message } from "../models/message";
 
 export type UserChatBubbleProps = {
@@ -16,7 +16,9 @@ export function UserChatBubble({ message }: UserChatBubbleProps) {
         friendlyTimestamp={message.friendlyTimestamp}
         position="end"
       />
-      <Avatar src={AvatarPerson} fallback="you" />
+      <Box width="36px" height="36px">
+        <AvatarUser />
+      </Box>
     </Grid>
   );
 }

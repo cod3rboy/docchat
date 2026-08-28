@@ -1,5 +1,5 @@
-import { Avatar, Flex, Grid, Skeleton, Spinner, Text } from "@radix-ui/themes";
-import AvatarBot from "../assets/images/avatar_bot.svg";
+import { Box, Flex, Grid, Skeleton, Spinner, Text } from "@radix-ui/themes";
+import { AvatarBot } from "./AvatarBot";
 import { ChatBubble } from "./ChatBubble";
 
 export interface AssistantChatReplyStreamProps {
@@ -12,7 +12,9 @@ export function AssistantChatReplyStream({
   return (
     <Grid columns="auto 1fr" gap="2" mr="8">
       <Flex direction="column" align="center">
-        <Avatar src={AvatarBot} fallback="bot" />
+        <Box width="36px" height="36px">
+          <AvatarBot />
+        </Box>
         <Spinner />
       </Flex>
       <ChatBubble

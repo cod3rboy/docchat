@@ -1,6 +1,6 @@
-import { Avatar, Grid } from "@radix-ui/themes";
+import { Box, Grid } from "@radix-ui/themes";
 import { ChatBubble } from "./ChatBubble";
-import AvatarBot from "../assets/images/avatar_bot.svg";
+import { AvatarBot } from "./AvatarBot";
 import { Message } from "../models/message";
 
 export type AssistantChatReplyProps = {
@@ -10,7 +10,9 @@ export type AssistantChatReplyProps = {
 export function AssistantChatReply({ message }: AssistantChatReplyProps) {
   return (
     <Grid columns="auto 1fr" gap="2" mr="8">
-      <Avatar src={AvatarBot} fallback="bot" />
+      <Box width="36px" height="36px">
+        <AvatarBot />
+      </Box>
       <ChatBubble
         position="start"
         content={message.content}
