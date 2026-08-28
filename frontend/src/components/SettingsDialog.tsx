@@ -13,11 +13,13 @@ import {
   Cross1Icon,
   CubeIcon,
   GearIcon,
+  InfoCircledIcon,
 } from "@radix-ui/react-icons";
 import { LLMModelSettings } from "./LLMModelSettings";
 import { useModelSettings } from "../hooks/useModelSettings";
 import { useModels } from "../hooks/useModels";
 import { ThemeSettings } from "./ThemeSettings";
+import { About } from "./About";
 
 export interface SettingsDialogProps {}
 
@@ -81,7 +83,12 @@ export function SettingsDialog({}: SettingsDialogProps) {
                 <Text>Themes</Text>
               </Flex>
             </Tabs.Trigger>
-            <Tabs.Trigger value="about">About</Tabs.Trigger>
+            <Tabs.Trigger value="about">
+              <Flex gap="1" align="center">
+                <InfoCircledIcon />
+                <Text>About</Text>
+              </Flex>
+            </Tabs.Trigger>
           </Tabs.List>
           <Box pt="3">
             <Tabs.Content value="models">
@@ -95,8 +102,7 @@ export function SettingsDialog({}: SettingsDialogProps) {
               <ThemeSettings />
             </Tabs.Content>
             <Tabs.Content value="about">
-              This is about tab content that shows tha application and author
-              information.
+              <About />
             </Tabs.Content>
           </Box>
         </Tabs.Root>
