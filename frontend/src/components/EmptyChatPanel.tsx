@@ -3,16 +3,7 @@ import { Flex, Text, Box } from "@radix-ui/themes";
 
 export function EmptyChatPanel() {
   return (
-    <Flex
-      direction="column"
-      gap="4"
-      justify="center"
-      align="center"
-      style={{
-        borderLeft: "1px solid var(--gray-6)",
-        borderRight: "1px solid var(--gray-6)",
-      }}
-    >
+    <Flex direction="column" gap="4" justify="center" align="center">
       <ChatBubbleIcon width="40" height="40" color="gray" />
       <Box>
         <Text as="p" size="4" color="gray" align="center">

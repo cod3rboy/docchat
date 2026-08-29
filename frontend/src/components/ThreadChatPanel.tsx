@@ -71,15 +71,7 @@ export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
     : "Assistant is replying ...";
 
   return (
-    <Grid
-      columns="1fr"
-      rows="auto 1fr auto"
-      style={{
-        borderLeft: "1px solid var(--gray-6)",
-        borderRight: "1px solid var(--gray-6)",
-      }}
-      overflow="hidden"
-    >
+    <Grid columns="1fr" rows="auto 1fr auto" overflow="hidden">
       <ChatHeader title={thread.title} />
       <ScrollArea
         ref={scrollRef}

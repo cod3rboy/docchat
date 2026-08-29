@@ -28,10 +28,16 @@ export function useModelSettings(): UseModelSettingsHookResult {
 
   useEffect(() => {
     fetchSettings();
+    window.addEventListener("settingsUpdated", fetchSettings);
+    return () => window.removeEventListener("settingsUpdated", fetchSettings);
   }, []);
 
   const debouncedSaveModelSettings = useDebouncedCallback(
-    SaveModelSettings,
+    async (settings: ModelSettings) => {
+      await SaveModelSettings(settings);
+      const eventSettingsUpdated = new CustomEvent("settingsUpdated");
+      window.dispatchEvent(eventSettingsUpdated);
+    },
     500,
   );
 

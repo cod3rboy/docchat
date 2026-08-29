@@ -6,6 +6,7 @@ import { SettingsDialog } from "./components/SettingsDialog";
 import { ThreadPanel } from "./components/ThreadPanel";
 import { ThreadProvider } from "./providers/ThreadProvider";
 import { WorkspaceProvider } from "./providers/WorkspaceProvider";
+import { ChatPanelSlot } from "./components/ChatPanelSlot";
 
 function App() {
   return (
@@ -15,7 +16,9 @@ function App() {
         <WorkspaceProvider>
           <ThreadProvider>
             <AppPanel />
-            <ChatPanel />
+            <ChatPanelSlot>
+              <ChatPanel />
+            </ChatPanelSlot>
             <ThreadPanel />
           </ThreadProvider>
         </WorkspaceProvider>
