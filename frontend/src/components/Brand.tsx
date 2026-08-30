@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Flex, Heading } from "@radix-ui/themes";
+import { Flex, Heading, Skeleton } from "@radix-ui/themes";
 import logoImageSrc from "../assets/images/logo.png";
 import { type AccentColor, useAppTheme } from "../hooks/useAppTheme";
 import { swapDominantColorInRasterImage } from "../../lib/theme";
@@ -49,6 +49,12 @@ export function Brand({ size = "sm", mode = "landscape" }: BrandProps) {
     <Flex direction={modes[mode]} gap="2" align="center">
       {logoSrc && (
         <img width={sizes[size].logo} height={sizes[size].logo} src={logoSrc} />
+      )}
+      {!logoSrc && (
+        <Skeleton
+          width={sizes[size].logo + "px"}
+          height={sizes[size].logo + "px"}
+        ></Skeleton>
       )}
       <Heading as="h1" size={sizes[size].text}>
         <span style={{ color: "var(--accent-12)" }}>Doc</span>{" "}
