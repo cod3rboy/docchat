@@ -25,6 +25,7 @@ func main() {
 	app.AddStartupHook(embdr.Start)
 
 	opts.Bind = []any{
+		&BuildInfo{},
 		bindings.NewWorkspace(app),
 		bindings.NewDocument(app, embdr),
 		bindings.NewThread(app),
