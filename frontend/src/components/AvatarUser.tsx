@@ -10,22 +10,21 @@ export function AvatarUser() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0,0,256,256"
-      fill-rule="nonzero"
+      fillRule="nonzero"
     >
       <g
         fill="none"
-        fill-rule="nonzero"
+        fillRule="nonzero"
         stroke="none"
-        stroke-width="1"
-        stroke-linecap="butt"
-        stroke-linejoin="miter"
-        stroke-miterlimit="10"
-        stroke-dasharray=""
-        stroke-dashoffset="0"
-        font-family="none"
-        font-weight="none"
-        font-size="none"
-        text-anchor="none"
+        strokeWidth="1"
+        strokeLinecap="butt"
+        strokeLinejoin="miter"
+        strokeMiterlimit="10"
+        strokeDasharray=""
+        strokeDashoffset="0"
+        fontFamily="none"
+        fontWeight="none"
+        fontSize="none"
         style={{
           mixBlendMode: "normal",
         }}

@@ -19,8 +19,8 @@ export function AvatarBot() {
       <path
         d="M128 26V52"
         stroke={palette.stroke}
-        stroke-width="6"
-        stroke-linecap="round"
+        strokeWidth="6"
+        strokeLinecap="round"
       />
 
       <circle
@@ -29,7 +29,7 @@ export function AvatarBot() {
         r="11"
         fill={palette.fill}
         stroke={palette.stroke}
-        stroke-width="5"
+        strokeWidth="5"
       />
 
       {/*Left Ear */}
@@ -41,7 +41,7 @@ export function AvatarBot() {
         rx="17"
         fill={palette.fill}
         stroke={palette.stroke}
-        stroke-width="5"
+        strokeWidth="5"
       />
 
       {/*Right Ear */}
@@ -53,7 +53,7 @@ export function AvatarBot() {
         rx="17"
         fill={palette.fill}
         stroke={palette.stroke}
-        stroke-width="5"
+        strokeWidth="5"
       />
 
       {/*Head */}
@@ -65,7 +65,7 @@ export function AvatarBot() {
         rx="34"
         fill={palette.fill}
         stroke={palette.stroke}
-        stroke-width="5"
+        strokeWidth="5"
       />
 
       {/*Eye Whites*/}
@@ -86,8 +86,8 @@ export function AvatarBot() {
              Q128 172 152 154"
         fill="none"
         stroke={palette.stroke}
-        stroke-width="7"
-        stroke-linecap="round"
+        strokeWidth="7"
+        strokeLinecap="round"
       />
 
       {/*Head Highlight */}
@@ -96,8 +96,8 @@ export function AvatarBot() {
              Q88 58 122 60"
         fill="none"
         stroke="#FFFFFF"
-        stroke-width="5"
-        stroke-linecap="round"
+        strokeWidth="5"
+        strokeLinecap="round"
         opacity=".75"
       />
     </svg>
