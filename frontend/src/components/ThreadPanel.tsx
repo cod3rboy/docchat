@@ -15,10 +15,15 @@ import {
   Create as createThread,
   Rename as renameThread,
   Delete as deleteThread,
+  AutoRename as autoRenameThread,
 } from "../../wailsjs/go/bindings/Thread";
 import { useWorkspace } from "../hooks/useWorkspace";
 import { useThread } from "../hooks/useThread";
 import { Thread } from "../models/thread";
+import {
+  EventThreadFirstMessage,
+  EventTypeThreadFirstMessage,
+} from "../events";
 
 export interface ThreadPanelProps {}
 
@@ -71,6 +76,33 @@ export function ThreadPanel({}: ThreadPanelProps) {
     },
     [changeThread],
   );
+
+  const handleThreadFirstMessage = useCallback(
+    async (e: CustomEvent<EventThreadFirstMessage>) => {
+      const updated = await autoRenameThread(
+        e.detail.threadId,
+        e.detail.message,
+      );
+      const renamedThread = new Thread(updated);
+      loadThreads();
+      changeThread(renamedThread);
+    },
+    [loadThreads, changeThread],
+  );
+
+  useEffect(() => {
+    window.addEventListener(
+      EventTypeThreadFirstMessage,
+      handleThreadFirstMessage,
+    );
+
+    return () => {
+      window.removeEventListener(
+        EventTypeThreadFirstMessage,
+        handleThreadFirstMessage,
+      );
+    };
+  }, [handleThreadFirstMessage]);
 
   useEffect(() => {
     loadThreads();

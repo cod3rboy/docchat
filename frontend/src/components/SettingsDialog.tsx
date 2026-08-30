@@ -20,6 +20,7 @@ import { useModelSettings } from "../hooks/useModelSettings";
 import { useModels } from "../hooks/useModels";
 import { ThemeSettings } from "./ThemeSettings";
 import { About } from "./About";
+import { EventAppSettings, EventTypeAppSettings } from "../events";
 
 export interface SettingsDialogProps {}
 
@@ -32,7 +33,7 @@ export function SettingsDialog({}: SettingsDialogProps) {
 
   useEffect(() => {
     const openSettings = () => {
-      const openEvent = new CustomEvent("EVENT_OPEN_APP_SETTINGS");
+      const openEvent = new CustomEvent<EventAppSettings>(EventTypeAppSettings);
       window.dispatchEvent(openEvent);
     };
     window.openSettings = openSettings;
@@ -41,10 +42,10 @@ export function SettingsDialog({}: SettingsDialogProps) {
       setOpen(true);
     };
 
-    window.addEventListener("EVENT_OPEN_APP_SETTINGS", handleOpenSettings);
+    window.addEventListener(EventTypeAppSettings, handleOpenSettings);
 
     return () => {
-      window.removeEventListener("EVENT_OPEN_APP_SETTINGS", handleOpenSettings);
+      window.removeEventListener(EventTypeAppSettings, handleOpenSettings);
     };
   }, []);
 

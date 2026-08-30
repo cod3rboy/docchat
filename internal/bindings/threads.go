@@ -2,9 +2,11 @@ package bindings
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/cod3rboy/docchat/internal/ai"
 	"github.com/cod3rboy/docchat/internal/app"
 	"github.com/cod3rboy/docchat/internal/models/thread"
 	"github.com/segmentio/ksuid"
@@ -103,4 +105,48 @@ func (t *Thread) Delete(id string) error {
 	}
 
 	return db.Threads.DeleteThread(t.app.Context(), id)
+}
+
+const subjectSystemPrompt string = `
+	Context: You are an expert in deducing relevant subject from a given text hint.
+	Action: Given a text hint by user, generate a relevant few words subject for that text.
+	Rules: Do not generate anything non-relevant and keep the subject limited up to few words only.
+	Format: The subject must not be empty and there should be atleast three words present.
+`
+
+func (t *Thread) AutoRename(id string, hint string) (thread.Thread, error) {
+	llm, err := t.app.LLM()
+	if err != nil {
+		return thread.Thread{}, err
+	}
+
+	prefs, err := t.app.Prefs()
+	if err != nil {
+		return thread.Thread{}, err
+	}
+
+	db, err := t.app.DB()
+	if err != nil {
+		return thread.Thread{}, err
+	}
+
+	conversations := []ai.Message{
+		{Content: subjectSystemPrompt, Role: "system"},
+		{Content: fmt.Sprintf("Text Hint: %s", hint), Role: "user"},
+	}
+
+	reply, err := llm.Chat(t.app.Context(), prefs.Models.PrimaryModel, conversations)
+	if err != nil {
+		return thread.Thread{}, err
+	}
+
+	thread, err := db.Threads.UpdateThread(
+		t.app.Context(),
+		thread.UpdateThreadParams{
+			ID:    id,
+			Title: reply.Content,
+		},
+	)
+
+	return thread, err
 }

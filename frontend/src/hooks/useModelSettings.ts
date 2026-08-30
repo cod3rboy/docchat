@@ -5,6 +5,7 @@ import {
   GetModelSettings,
   SaveModelSettings,
 } from "../../wailsjs/go/bindings/Settings";
+import { EventSettingsUpdated, EventTypeSettingsUpdated } from "../events";
 
 export type ModelSettings = bindings.ModelSettings;
 
@@ -28,14 +29,17 @@ export function useModelSettings(): UseModelSettingsHookResult {
 
   useEffect(() => {
     fetchSettings();
-    window.addEventListener("settingsUpdated", fetchSettings);
-    return () => window.removeEventListener("settingsUpdated", fetchSettings);
+    window.addEventListener(EventTypeSettingsUpdated, fetchSettings);
+    return () =>
+      window.removeEventListener(EventTypeSettingsUpdated, fetchSettings);
   }, []);
 
   const debouncedSaveModelSettings = useDebouncedCallback(
     async (settings: ModelSettings) => {
       await SaveModelSettings(settings);
-      const eventSettingsUpdated = new CustomEvent("settingsUpdated");
+      const eventSettingsUpdated = new CustomEvent<EventSettingsUpdated>(
+        EventTypeSettingsUpdated,
+      );
       window.dispatchEvent(eventSettingsUpdated);
     },
     500,

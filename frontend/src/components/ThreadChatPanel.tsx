@@ -11,6 +11,10 @@ import {
 } from "../../wailsjs/go/bindings/Message";
 import { useAssistantReplyStream } from "../hooks/useAssistantReplyStream";
 import { toast } from "sonner";
+import {
+  EventThreadFirstMessage,
+  EventTypeThreadFirstMessage,
+} from "../events";
 
 export interface ThreadChatPanelProps {
   thread: Thread;
@@ -52,6 +56,15 @@ export function ThreadChatPanel({ thread }: ThreadChatPanelProps) {
     stream([...msgs, msg]);
     setDraft("");
     setMessages((msgs) => [msg, ...msgs]);
+    if (msgs.length === 0) {
+      const threadFirstMsgEvent = new CustomEvent<EventThreadFirstMessage>(
+        EventTypeThreadFirstMessage,
+        {
+          detail: { threadId: msg.threadId, message: msg.content },
+        },
+      );
+      window.dispatchEvent(threadFirstMsgEvent);
+    }
   };
 
   const handleStopReply = async () => {
