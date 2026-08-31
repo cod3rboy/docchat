@@ -25,9 +25,9 @@ define prepare_version
 endef
 
 APP_VERSION := dev
-APP_BUILD := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 build-app:
+	$(eval APP_BUILD := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ"))
 ifdef version
 	$(eval APP_VERSION = $(version))
 endif
@@ -36,3 +36,43 @@ endif
 
 build-run: build-app
 	build/bin/DocChat
+
+build-linux:
+ifndef version
+	@echo "parameter not specified: version=v*.*.*"
+	exit 1
+else
+	@echo "building for linux..."
+	$(eval APP_BUILD := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ"))
+	$(call prepare_version,${version})
+	wails build -clean \
+	-tags=webkit2_41 \
+	-ldflags="-X main.version=${version} -X main.build=$(APP_BUILD)"
+endif
+
+build-windows:
+ifndef version
+	@echo "parameter not specified: version=v*.*.*"
+	exit 1
+else
+	@echo "building for windows..."
+	$(eval APP_BUILD := $(shell (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"))
+	$(call prepare_version,${version})
+	wails build -clean \
+	-platform=windows/amd64 \
+	-webview2=download \
+	-ldflags="-X main.version=${version} -X main.build=$(APP_BUILD)"
+endif
+
+build-mac:
+ifndef version
+	@echo "parameter not specified: version=v*.*.*"
+	exit 1
+else
+	@echo "building for mac (universal)..."
+	$(eval APP_BUILD := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ"))
+	$(call prepare_version,${version})
+	wails build -clean \
+	-platform=darwin/universal \
+	-ldflags="-X main.version=${version} -X main.build=$(APP_BUILD)"
+endif
