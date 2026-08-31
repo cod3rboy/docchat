@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/dslipak/pdf"
+	"github.com/ledongthuc/pdf"
 )
 
 type pdfReader struct{}

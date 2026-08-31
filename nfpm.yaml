@@ -1,0 +1,32 @@
+name: ${APP_NAME}
+arch: amd64
+platform: linux
+
+version: ${VERSION}
+release: "1"
+
+section: utils
+priority: optional
+
+maintainer: "cod3rboy"
+description: "DocChat desktop application"
+vendor: "cod3rboy"
+homepage: "https://github.com/cod3rboy/${APP_NAME}"
+
+license: MIT
+
+contents:
+  - src: ./build/bin/${APP_NAME}
+    dst: /usr/bin/${APP_NAME}
+    file_info:
+      mode: 0755
+
+  - src: ./build/app.desktop
+    dst: /usr/share/applications/${APP_NAME}.desktop
+
+  - src: ./build/${APP_NAME}-512.png
+    dst: /usr/share/icons/hicolor/512x512/apps/${APP_NAME}.png
+
+scripts:
+  postinstall: ./scripts/refresh-desktop-entries.sh
+  postremove: ./scripts/refresh-desktop-entries.sh

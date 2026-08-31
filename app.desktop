@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=DocChat
+Comment=AI powered chat application to query documents
+Exec=DocChat
+Icon=DocChat
+Terminal=false
+Type=Application
+Categories=Utility;
