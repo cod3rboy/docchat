@@ -42,9 +42,12 @@ func main() {
 
 func defaultOptions() *options.App {
 	return &options.App{
-		Title:  "Doc Chat",
-		Width:  1024,
-		Height: 768,
+		Title:     "Doc Chat",
+		Width:     1024,
+		Height:    768,
+		MinWidth:  800,
+		MinHeight: 600,
+		Frameless: false,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

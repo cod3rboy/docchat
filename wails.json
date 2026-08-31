@@ -13,7 +13,7 @@
   "info": {
     "companyName": "Dheeraj Kumar Open Source",
     "productName": "DocChat",
-    "productVersion": "1.0",
+    "productVersion": "dev",
     "copyright": "Copyright 2026-2027 Dheeraj Kumar",
     "comments": "AI powered chat application to query documents, uncover insights, and find answers instantly."
   },
@@ -30,7 +30,7 @@
     "bundle": {
       "identifier": "com.cod3rboy.docchat",
       "name": "DocChat",
-      "version": "1.0",
+      "version": "dev",
       "copyright": "Copyright 2026-2027 Dheeraj Kumar"
     }
   }

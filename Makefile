@@ -16,3 +16,23 @@ ifdef name
 else
 	@echo "name=<migration_name> is not specified"
 endif
+
+# Updates application version in the configuration
+define prepare_version
+	@echo "Prepare DocChat Version: $(1)"
+	@jq '.info.productVersion = "$(1)" | .mac.bundle.version = "$(1)"' wails.json > wails.tmp.json
+	@mv wails.tmp.json wails.json
+endef
+
+APP_VERSION := dev
+APP_BUILD := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+build-app:
+ifdef version
+	$(eval APP_VERSION = $(version))
+endif
+	$(call prepare_version,$(APP_VERSION))
+	wails build -tags=webkit2_41 -ldflags="-X main.version=$(APP_VERSION) -X main.build=$(APP_BUILD)"
+
+build-run: build-app
+	build/bin/DocChat
