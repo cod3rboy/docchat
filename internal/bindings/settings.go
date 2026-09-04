@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/cod3rboy/docchat/internal/app"
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
@@ -77,14 +78,14 @@ func (s *Settings) SaveModelSettings(settings ModelSettings) error {
 func (s *Settings) ListModels(apiEndpoint, apiKey string) ([]string, error) {
 	client := retryablehttp.NewClient()
 	client.RetryMax = 3
-	modelsEndpoint := apiEndpoint + "/models?output_modalities=all"
+	modelsEndpoint := strings.TrimSuffix(apiEndpoint, "/") + "/models?output_modalities=all"
 	req, err := retryablehttp.NewRequest("GET", modelsEndpoint, nil)
 	if err != nil {
 		return nil, err
 	}
 	if apiKey != "" {
 		req.Header = make(http.Header)
-		req.Header.Add("Authorization", fmt.Sprintf("Bearder %s", apiKey))
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	}
 
 	res, err := client.Do(req)
