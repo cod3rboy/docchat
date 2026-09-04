@@ -42,6 +42,7 @@ export function AppPanel() {
     const record = await createWorkspace(workspaceName);
     const workspace = new Workspace(record);
     setWorkspaces((workspaces) => [workspace, ...workspaces]);
+    changeWorkspace(workspace);
   };
 
   const switchWorkspace = (workspaceId: string) => {
